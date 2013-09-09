@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/FirstEPUB" android:title="Open Book 1"></item>
+    <item android:id="@+id/SecondEPUB" android:title="Open Book 2"></item>
+    <item android:id="@+id/Front" android:title="Enable Parallel Texts">
+        <menu>
+            <item android:id="@+id/FirstFront" android:title="From Book 1"/>
+            <item android:id="@+id/SecondFront" android:title="From Book 2"/>
+        </menu>
+    </item>
+    <item android:id="@+id/Synchronize" android:title="Toggle Sync Views"></item><item android:id="@+id/Align" android:title="Reset Sync Views">
+        <menu>
+            <item android:id="@+id/PconS" android:title="Sync Book 1 with Book 2"/>
+            <item android:id="@+id/SconP" android:title="Sync Book 2 with Book 1"/>
+        </menu>
+    </item>
+    
+    <item android:id="@+id/Metadata" android:title="Show Metadata">
+        <menu>
+            <item android:id="@+id/meta1" android:title="Book 1"/>
+            <item android:id="@+id/meta2" android:title="Book 2"/>
+        </menu>
+    </item>
+
+</menu>

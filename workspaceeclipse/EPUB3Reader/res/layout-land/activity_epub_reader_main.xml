@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/dark_grey"
+    android:baselineAligned="false"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:id="@+id/firstViewportLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.50"
+        android:layout_marginRight="@dimen/margin_bottom"
+         >
+
+        <Button
+            android:id="@+id/topFirstView"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/horizontal_button_height"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:alpha="0.0"
+            android:padding="@dimen/all_margin" />
+
+        <Button
+            android:id="@+id/bottomFirstView"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/horizontal_button_height"
+            android:layout_alignBottom="@+id/firstViewport"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:alpha="0.0"/>
+
+        <WebView
+            android:id="@+id/firstViewport"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" />
+
+        <Button
+            android:id="@+id/topRightFirstView"
+            android:layout_width="@dimen/close_button_dimen"
+            android:layout_height="@dimen/close_button_dimen"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="@dimen/all_margin"
+            android:padding="@dimen/all_margin"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/secondViewportLayout"
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
+        android:layout_height="fill_parent" >
+        
+        <WebView
+            android:id="@+id/secondViewport"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="@dimen/all_margin" />
+
+        <Button
+            android:id="@+id/bottomSecondView"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/horizontal_button_height"
+            android:layout_alignLeft="@+id/topSecondView"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/all_margin"
+            android:alpha="0.0" />
+
+        <Button
+            android:id="@+id/topSecondView"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/horizontal_button_height"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="@dimen/all_margin"
+            android:layout_toLeftOf="@+id/topRightSecondView"
+            android:alpha="0.0"
+            android:padding="@dimen/all_margin" />
+
+        <Button
+            android:id="@+id/topRightSecondView"
+            android:layout_width="@dimen/close_button_dimen"
+            android:layout_height="@dimen/close_button_dimen"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="@dimen/all_margin"
+            android:padding="@dimen/all_margin" />
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,9 @@
+<resources>
+
+    <dimen name="horizontal_button_height">10dp</dimen>
+    <dimen name="vertical_button_width">10dp</dimen>
+    <dimen name="all_margin">0dp</dimen>
+    <dimen name="close_button_dimen">30dp</dimen>
+    <dimen name="margin_bottom">12dp</dimen>
+
+</resources>
