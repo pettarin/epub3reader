@@ -27,6 +27,11 @@ If the XHTML files inside an EPUB comply with the naming convention described be
 Finally, the user can split the viewport for reading two completely unrelated eBooks.
 
 
+### Screenshots
+
+[See SCREENSHOTS.md](SCREENSHOTS.md)
+
+
 ### Download, Installation, and Privacy/Security Notes
 
 From this repository, you can download:
@@ -136,10 +141,4 @@ Finally, several other advanced functions might be added to enhance the reading 
 Feedback about this ongoing project is much appreciated.
 
 You can send your comments by email to [Dr. Alberto Pettarin](http://www.albertopettarin.it/) (ReadBeyond, Padova, Italy) or [Prof. Carlo Fantozzi](http://www.dei.unipd.it/~fantozzi/) (University of Padova, Padova, Italy), adding `EPUB3Reader` to the subject, thank you!
-
-
-### Screenshots
-
-EPUB file selector
-![EPUB file selector](https://github.com/pettarin/epub3reader/raw/master/screenshots/01_library.png "EPUB file selector")
 
