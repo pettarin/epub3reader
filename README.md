@@ -34,6 +34,7 @@ From this repository, you can download:
 * a pre-compiled APK from the `bin/` directory
 * the Eclipse project directory, ready to be imported in your Eclipse workspace, from the `workspaceeclipse/` directory
 * some sample EPUB 3 eBooks containing parallel texts, from the `ebooks/` directory
+* some screenshots, from the `screenshots/` directory
 
 To install the APK on your smartphone or tablet, you need:
 
