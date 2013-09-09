@@ -3,7 +3,7 @@
 ## Screenshots
 
 ### EPUB File Selector
-![EPUB file selector](https://github.com/pettarin/epub3reader/raw/master/screenshots/01_library.pngEPUB file selector "EPUB File Selector")
+![EPUB file selector](https://github.com/pettarin/epub3reader/raw/master/screenshots/01_library.png "EPUB File Selector")
 
 ### One Book Open
 ![One Book Open](https://github.com/pettarin/epub3reader/raw/master/screenshots/02_book1_open.png "One Book Open")
