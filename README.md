@@ -47,6 +47,7 @@ To install the APK on your smartphone or tablet, you need:
 * Enable the _Unknown sources_ option in the _Security Settings_
 
 The installation is simple: just copy the APK to your sdcard and open it with the default package manager.
+If you download the APK file directly onto your tablet/smartphone, please be sure to select _Raw_ or _View raw_, otherwise you will download the GitHub Web page (with `apk` extension), and the installation will give you an error.
 
 The installer will ask you to grant the following permissions:
 
