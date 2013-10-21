@@ -20,12 +20,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-*/
+ */
 
 package it.angrydroids.epub3reader;
 
 import java.io.IOException;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
@@ -43,13 +44,17 @@ public class EpubNavigator extends WebViewClient {
 	private boolean synchronizedReadingActive;
 	private String pageOnView1;
 	private String pageOnView2;
+	private static Context context;
 
-	public EpubNavigator() {
+	public EpubNavigator(Context theContext) {
 		atLeastOneBookOpen = false;
 		exactlyOneBookOpen = true;
 		synchronizedReadingActive = false;
 		pageOnView1 = "";
 		pageOnView2 = "";
+		if (context == null) {
+			context = theContext;
+		}
 	}
 
 	public boolean openBook1(String path) {
@@ -58,9 +63,10 @@ public class EpubNavigator extends WebViewClient {
 			if (book1 != null)
 				book1.destroy();
 
-			book1 = new EpubManipulator(path, "1");
+			book1 = new EpubManipulator(path, "1", context);
 			setView1(book1.getSpineElementPath(0));
 			atLeastOneBookOpen = true;
+			book1.createTocFile();
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -71,9 +77,9 @@ public class EpubNavigator extends WebViewClient {
 		try {
 			if (book2 != null)
 				book2.destroy();
-
-			book2 = new EpubManipulator(path, "2");
+			book2 = new EpubManipulator(path, "2", context);
 			setView2(book2.getSpineElementPath(0));
+			book2.createTocFile();
 			exactlyOneBookOpen = false;
 			return true;
 		} catch (Exception e) {
@@ -171,7 +177,8 @@ public class EpubNavigator extends WebViewClient {
 			if ((exactlyOneBookOpen) || (book2 == null)) {
 				// no second book open
 				atLeastOneBookOpen = false; // There is no longer any open book
-				return ViewStateEnum.invisible; // and the first view must be closed
+				return ViewStateEnum.invisible; // and the first view must be
+												// closed
 			} else {
 				// second book open
 
@@ -276,60 +283,83 @@ public class EpubNavigator extends WebViewClient {
 
 		if (which == BookEnum.first)
 			if (book1 != null) {
-				// TODO: hardcoded string
-				pageOnView1 = "Metadata";
+				pageOnView1 = getS(R.string.metadata);
 				EpubReaderMain.getView1().loadData(book1.metadata(),
-						"text/html", null);
+						getS(R.string.textOrHTML), null);
 			} else
 				res = false;
 		else if (book2 != null) {
-			// TODO: hardcoded string
-			pageOnView2 = "Metadata";
+			pageOnView2 = getS(R.string.metadata);
 			EpubReaderMain.getView2().loadData(book2.metadata(),
-					"text/html", null);
+					getS(R.string.textOrHTML), null);
 		} else
 			res = false;
 
 		return res;
 	}
 
-	// TODO: hardcoded strings
+	// return true if TOC is available, false otherwise
+	public boolean displayTOC(BookEnum which) {
+		boolean res = true;
+
+		if (which == BookEnum.first)
+			if (book1 != null) {
+				pageOnView1 = getS(R.string.Table_of_Contents);
+				EpubReaderMain.getView1().loadUrl(book1.tableOfContents());
+			} else
+				res = false;
+		else if (book2 != null) {
+			pageOnView2 = getS(R.string.Table_of_Contents);
+			EpubReaderMain.getView2().loadUrl(book2.tableOfContents());
+		} else
+			res = false;
+
+		return res;
+	}
+
 	public void saveState(Editor editor) {
 
-		editor.putBoolean("bookOpen", atLeastOneBookOpen);
-		editor.putBoolean("onlyOne", exactlyOneBookOpen);
-		editor.putBoolean("sync", synchronizedReadingActive);
-		if (atLeastOneBookOpen) {
+		editor.putBoolean(getS(R.string.bookOpen), atLeastOneBookOpen);
+		editor.putBoolean(getS(R.string.onlyOne), exactlyOneBookOpen);
+		editor.putBoolean(getS(R.string.sync), synchronizedReadingActive);
 
+		if (atLeastOneBookOpen) {
 			if (book1 != null) {
 
 				// book1 exists: save its state and close it
-				editor.putString("page1", pageOnView1);
-				editor.putInt("CurrentPageBook1",
+				editor.putString(getS(R.string.page1), pageOnView1);
+				editor.putInt(getS(R.string.CurrentPageBook1),
 						book1.getCurrentSpineElementIndex());
-				editor.putInt("LanguageBook1", book1.getCurrentLanguage());
-				editor.putString("nameEpub1", book1.getDecompressedFolder());
-				editor.putString("pathBook1", book1.getFileName());
+				editor.putInt(getS(R.string.LanguageBook1),
+						book1.getCurrentLanguage());
+				editor.putString(getS(R.string.nameEpub1),
+						book1.getDecompressedFolder());
+				editor.putString(getS(R.string.pathBook1), book1.getFileName());
 				try {
 					book1.closeStream();
 				} catch (IOException e) {
-					Log.e("Cannot close stream", "book1 stream");
+					Log.e(getS(R.string.error_CannotCloseStream),
+							getS(R.string.Book1_Stream));
 					e.printStackTrace();
 				}
 
-				editor.putString("page2", pageOnView2);
+				editor.putString(getS(R.string.page2), pageOnView2);
 				if ((!exactlyOneBookOpen) && (book2 != null)) {
 
 					// book2 exists: save its state and close it
-					editor.putInt("CurrentPageBook2",
+					editor.putInt(getS(R.string.CurrentPageBook2),
 							book2.getCurrentSpineElementIndex());
-					editor.putInt("LanguageBook2", book2.getCurrentLanguage());
-					editor.putString("nameEpub2", book2.getDecompressedFolder());
-					editor.putString("pathBook2", book2.getFileName());
+					editor.putInt(getS(R.string.LanguageBook2),
+							book2.getCurrentLanguage());
+					editor.putString(getS(R.string.nameEpub2),
+							book2.getDecompressedFolder());
+					editor.putString(getS(R.string.pathBook2),
+							book2.getFileName());
 					try {
 						book2.closeStream();
 					} catch (IOException e) {
-						Log.e("Cannot close stream", "book2 stream");
+						Log.e(getS(R.string.error_CannotCloseStream),
+								getS(R.string.Book2_Stream));
 						e.printStackTrace();
 					}
 				}
@@ -337,31 +367,35 @@ public class EpubNavigator extends WebViewClient {
 		}
 	}
 
-	// TODO: hardcoded strings
 	public boolean loadState(SharedPreferences preferences) {
 		boolean ok = true;
-		atLeastOneBookOpen = preferences.getBoolean("bookOpen", false);
-		exactlyOneBookOpen = preferences.getBoolean("onlyOne", true);
-		synchronizedReadingActive = preferences.getBoolean("sync", false);
+		atLeastOneBookOpen = preferences.getBoolean(getS(R.string.bookOpen),
+				false);
+		exactlyOneBookOpen = preferences.getBoolean(getS(R.string.onlyOne),
+				true);
+		synchronizedReadingActive = preferences.getBoolean(getS(R.string.sync),
+				false);
 
 		if (atLeastOneBookOpen) {
 
 			// load the first book
-			pageOnView1 = preferences.getString("page1", "");
-			int pageIndex = preferences.getInt("CurrentPageBook1", 0);
-			int langIndex = preferences.getInt("LanguageBook1", 0);
-			String folder = preferences.getString("nameEpub1", "");
-			String file = preferences.getString("pathBook1", "");
+			pageOnView1 = preferences.getString(getS(R.string.page1), "");
+			int pageIndex = preferences.getInt(getS(R.string.CurrentPageBook1),
+					0);
+			int langIndex = preferences.getInt(getS(R.string.LanguageBook1), 0);
+			String folder = preferences.getString(getS(R.string.nameEpub1), "");
+			String file = preferences.getString(getS(R.string.pathBook1), "");
 
 			// try loading a book already extracted
 			try {
-				book1 = new EpubManipulator(file, folder, pageIndex, langIndex);
+				book1 = new EpubManipulator(file, folder, pageIndex, langIndex,
+						context);
 				book1.goToPage(pageIndex);
 			} catch (Exception e1) {
 
 				// error: retry this way
 				try {
-					book1 = new EpubManipulator(file, "1");
+					book1 = new EpubManipulator(file, "1", context);
 					book1.goToPage(pageIndex);
 				} catch (Exception e2) {
 					ok = false;
@@ -371,23 +405,30 @@ public class EpubNavigator extends WebViewClient {
 
 			// Show the first view's actual page
 			loadPageIntoView1(pageOnView1);
-			if (pageOnView1 == "Metadata") // if they were metadata, reload them
+			if (pageOnView1 == getS(R.string.metadata)) // if they were
+														// metadata, reload them
 				displayMetadata(BookEnum.first);
 
+			if (pageOnView1 == getS(R.string.Table_of_Contents)) // if it was
+																	// table of
+				// content, reload it
+				displayTOC(BookEnum.first);
+
 			// If there is a second book, try to reload it
-			pageOnView2 = preferences.getString("page2", "");
+			pageOnView2 = preferences.getString(getS(R.string.page2), "");
 			if (!exactlyOneBookOpen) {
-				pageIndex = preferences.getInt("CurrentPageBook2", 0);
-				langIndex = preferences.getInt("LanguageBook2", 0);
-				folder = preferences.getString("nameEpub2", "");
-				file = preferences.getString("pathBook2", "");
+				pageIndex = preferences.getInt(getS(R.string.CurrentPageBook2),
+						0);
+				langIndex = preferences.getInt(getS(R.string.LanguageBook2), 0);
+				folder = preferences.getString(getS(R.string.nameEpub2), "");
+				file = preferences.getString(getS(R.string.pathBook2), "");
 				try {
 					book2 = new EpubManipulator(file, folder, pageIndex,
-							langIndex);
+							langIndex, context);
 					book2.goToPage(pageIndex);
 				} catch (Exception e3) {
 					try {
-						book2 = new EpubManipulator(file, "2");
+						book2 = new EpubManipulator(file, "2", context);
 						book2.goToPage(pageIndex);
 					} catch (Exception e4) {
 						ok = false;
@@ -396,15 +437,27 @@ public class EpubNavigator extends WebViewClient {
 			}
 
 			loadPageIntoView2(pageOnView2);
-			if (pageOnView2 == "Metadata")
+			if (pageOnView2 == getS(R.string.metadata))
 				displayMetadata(BookEnum.second);
 
+			if (pageOnView2 == getS(R.string.Table_of_Contents))
+				displayTOC(BookEnum.second);
 		}
 		return ok;
 	}
 
 	public boolean isExactlyOneBookOpen() {
 		return exactlyOneBookOpen;
+	}
+
+	public String getS(int id) {
+
+		return context.getResources().getString(id);
+
+	}
+
+	public boolean isSynchronized() {
+		return synchronizedReadingActive;
 	}
 
 	public boolean isAtLeastOneBookOpen() {
