@@ -73,7 +73,7 @@ public final class R {
         public static final int activity_epub_reader_main=0x7f030000;
         public static final int change_css=0x7f030001;
         public static final int file_chooser_layout=0x7f030002;
-        public static final int setsize=0x7f030003;
+        public static final int set_panel_size=0x7f030003;
     }
     public static final class menu {
         public static final int epub_reader_main=0x7f080000;
@@ -113,7 +113,7 @@ public final class R {
         public static final int bpath=0x7f050019;
         public static final int changeStyle=0x7f050046;
         public static final int change_Font=0x7f050044;
-        public static final int change_Font_Colour=0x7f050045;
+        public static final int change_Font_Color=0x7f050045;
         public static final int contributorsMeta=0x7f05003c;
         public static final int descriptionsMeta=0x7f050040;
         public static final int error_CannotChangeStyle=0x7f05004c;
@@ -143,6 +143,7 @@ public final class R {
         public static final int onlyOne=0x7f050027;
         public static final int page1=0x7f050029;
         public static final int page2=0x7f050030;
+        public static final int parallelTextBool=0x7f050051;
         public static final int pathBook1=0x7f05002c;
         public static final int pathBook2=0x7f050033;
         public static final int publishersMeta=0x7f05003e;

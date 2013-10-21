@@ -42,6 +42,7 @@ public class EpubNavigator extends WebViewClient {
 	private boolean atLeastOneBookOpen;
 	private boolean exactlyOneBookOpen;
 	private boolean synchronizedReadingActive;
+	private boolean parallelText = false;
 	private String pageOnView1;
 	private String pageOnView2;
 	private static Context context;
@@ -90,6 +91,7 @@ public class EpubNavigator extends WebViewClient {
 	public boolean parallelText(BookEnum which, int firstLanguage,
 			int secondLanguage) {
 		boolean ok = true;
+		parallelText = true;
 		if (firstLanguage != -1) {
 			try {
 				if (which != BookEnum.first) {
@@ -164,6 +166,9 @@ public class EpubNavigator extends WebViewClient {
 	}
 
 	public ViewStateEnum closeView1() {
+		if (parallelText == true) {
+			parallelText = false;
+		}
 		// book mode?
 		if ((book1.getPageIndex(pageOnView1) >= 0)
 				|| (pageOnView1.equals(book1.getCurrentPageURL()))) {
@@ -200,8 +205,10 @@ public class EpubNavigator extends WebViewClient {
 	}
 
 	public ViewStateEnum closeView2() {
+		if (parallelText == true) {
+			parallelText = false;
+		}
 		// book mode?
-
 		if ((book2 == null) || (book2.getPageIndex(pageOnView2) >= 0)
 				|| (pageOnView2.equals(book2.getCurrentPageURL()))) {
 			// book mode: delete it
@@ -322,6 +329,7 @@ public class EpubNavigator extends WebViewClient {
 		editor.putBoolean(getS(R.string.bookOpen), atLeastOneBookOpen);
 		editor.putBoolean(getS(R.string.onlyOne), exactlyOneBookOpen);
 		editor.putBoolean(getS(R.string.sync), synchronizedReadingActive);
+		editor.putBoolean(getS(R.string.parallelTextBool), parallelText);
 
 		if (atLeastOneBookOpen) {
 			if (book1 != null) {
@@ -374,6 +382,8 @@ public class EpubNavigator extends WebViewClient {
 		exactlyOneBookOpen = preferences.getBoolean(getS(R.string.onlyOne),
 				true);
 		synchronizedReadingActive = preferences.getBoolean(getS(R.string.sync),
+				false);
+		parallelText = preferences.getBoolean(getS(R.string.parallelTextBool),
 				false);
 
 		if (atLeastOneBookOpen) {
@@ -451,9 +461,11 @@ public class EpubNavigator extends WebViewClient {
 	}
 
 	public String getS(int id) {
-
 		return context.getResources().getString(id);
+	}
 
+	public boolean isParallelTextOn() {
+		return parallelText;
 	}
 
 	public boolean isSynchronized() {

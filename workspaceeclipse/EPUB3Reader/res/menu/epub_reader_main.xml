@@ -28,9 +28,9 @@
             <item android:id="@+id/toc2" android:title="@string/Book_2"/>
         </menu>
     </item>
-    <item android:id="@+id/changeSizes" android:title="@string/Change_Sizes">
+    <item android:id="@+id/changeSizes" android:title="@string/Change_Sizes" android:visible="true" android:checkable="false">
     </item>
-    <item android:id="@+id/Style" android:title="@string/changeStyle">
+    <item android:id="@+id/Style" android:title="@string/changeStyle" android:visible="false">
     </item>
 
 </menu>

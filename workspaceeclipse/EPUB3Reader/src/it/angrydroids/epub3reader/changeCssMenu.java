@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
-public class changeCssMenu extends DialogFragment {
+public class ChangeCSSMenu extends DialogFragment {
 
 	protected float value = (float) 0.2;
 	protected Button[] buttons = new Button[5];
@@ -28,13 +28,14 @@ public class changeCssMenu extends DialogFragment {
 		View view = inflater.inflate(R.layout.change_css, null);
 		builder.setTitle("Style");
 		builder.setView(view);
-		builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+		builder.setPositiveButton(getString(R.string.OK),
+				new DialogInterface.OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-			}
-		});
-		builder.setNegativeButton("cancell",
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+					}
+				});
+		builder.setNegativeButton(getString(R.string.Cancel),
 				new DialogInterface.OnClickListener() {
 
 					@Override

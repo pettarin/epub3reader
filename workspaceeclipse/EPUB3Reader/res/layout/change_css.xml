@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="@string/change_Font_Colour"
+        android:text="@string/change_Font_Color"
         android:textSize="24sp" />
 
     <Button

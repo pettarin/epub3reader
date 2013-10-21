@@ -320,9 +320,11 @@ public class EpubReaderMain extends Activity {
 
 		if (navigator.isExactlyOneBookOpen() == false) {
 
-			menu.findItem(R.id.meta2).setVisible(true);
+			if (navigator.isParallelTextOn() == false) {
+				menu.findItem(R.id.meta2).setVisible(true);
 
-			menu.findItem(R.id.toc2).setVisible(true);
+				menu.findItem(R.id.toc2).setVisible(true);
+			}
 
 			menu.findItem(R.id.Synchronize).setVisible(true);
 
@@ -331,9 +333,7 @@ public class EpubReaderMain extends Activity {
 			menu.findItem(R.id.SecondFront).setVisible(true);
 		}
 
-		else { // if there is exactly one book open, hide some items from the
-				// menu
-
+		else if (navigator.isExactlyOneBookOpen() == true) {
 			menu.findItem(R.id.meta2).setVisible(false);
 
 			menu.findItem(R.id.toc2).setVisible(false);
@@ -443,7 +443,7 @@ public class EpubReaderMain extends Activity {
 			return true;
 		case R.id.changeSizes:
 			try {
-				DialogFragment newFragment = new SetSize();
+				DialogFragment newFragment = new SetPanelSize();
 				newFragment.show(getFragmentManager(), "");
 			} catch (Exception e) {
 				errorMessage(getString(R.string.error_cannotChangeSizes));
@@ -451,7 +451,7 @@ public class EpubReaderMain extends Activity {
 			return true;
 		case R.id.Style: // work in progress...
 			try {
-				DialogFragment newFragment = new changeCssMenu();
+				DialogFragment newFragment = new ChangeCSSMenu();
 				newFragment.show(getFragmentManager(), "");
 			} catch (Exception e) {
 				errorMessage(getString(R.string.error_CannotChangeStyle));
@@ -517,6 +517,7 @@ public class EpubReaderMain extends Activity {
 
 	// Language Selection
 	public void chooseLanguage(BookEnum which) {
+
 		String[] languages;
 		if (which == BookEnum.first) {
 			languages = navigator.getLanguagesBook1();

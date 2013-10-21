@@ -18,7 +18,7 @@
     <string name="Book_2">Book 2</string>
     <string name="bookOpen">bookOpen</string>
     <string name="Table_of_Contents">Table of Contents</string>
-    <string name="Change_Sizes">Change Sizes</string>
+    <string name="Change_Sizes">Change Panel Sizes</string>
     <string name="error_LoadPage">Can not load the page</string>
     <string name="error_LoadBook">Cannot load the book</string>
     <string name="error_onlyOneBookOpen">Only one book open!</string>
@@ -69,9 +69,9 @@
     <string name="descriptionsMeta">&lt;tr&gt;&lt;td&gt;Descriptions:&lt;/td&gt;</string>
     <string name="rightsMeta">&lt;tr&gt;&lt;td&gt;Rights:&lt;/td&gt;</string>
     <string name="tablebodyhtmlClose">&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    <string name="tocReference">&lt;tr&gt;&lt;td&gt;TOCReference:&lt;/td&gt;</string>
+    <string name="tocReference">&lt;tr&gt;&lt;td&gt;Table of Contents:&lt;/td&gt;</string>
     <string name="change_Font">Change Font</string>
-    <string name="change_Font_Colour">Change Font Colour:</string>
+    <string name="change_Font_Color">Change Font Color:</string>
     <string name="changeStyle">Change Style</string>
     <string name="blue_rgb">#0000ff</string>
     <string name="red_rgb">#ff0000</string>
@@ -81,6 +81,7 @@
     <string name="error_CannotChangeStyle">Cannot Change Style!</string>
     <string name="OK">OK</string>
     <string name="Cancel">Cancel</string>
-    <string name="SetSizeTitle">First View Size:</string>
+    <string name="SetSizeTitle">First Panel Size:</string>
     <string name="LanguageChooserTitle">Choose two languages:</string>
+    <string name="parallelTextBool">parallelTextBool</string>
 </resources>
