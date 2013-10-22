@@ -169,8 +169,6 @@ public class EpubNavigator extends WebViewClient {
 
 	public ViewStateEnum closeView1() {
 
-		parallelText = false;
-
 		// book mode?
 		if ((book1.getPageIndex(pageOnView1) >= 0)
 				|| (pageOnView1.equals(book1.getCurrentPageURL()))) {
@@ -207,8 +205,6 @@ public class EpubNavigator extends WebViewClient {
 	}
 
 	public ViewStateEnum closeView2() {
-
-		parallelText = false;
 
 		// book mode?
 		if ((book2 == null) || (book2.getPageIndex(pageOnView2) >= 0)
