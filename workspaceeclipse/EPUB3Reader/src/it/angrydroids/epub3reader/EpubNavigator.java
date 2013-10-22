@@ -63,7 +63,7 @@ public class EpubNavigator extends WebViewClient {
 			// if a book is already open, deletes it
 			if (book1 != null)
 				book1.destroy();
-
+			parallelText = false;
 			book1 = new EpubManipulator(path, "1", context);
 			setView1(book1.getSpineElementPath(0));
 			atLeastOneBookOpen = true;
@@ -78,6 +78,7 @@ public class EpubNavigator extends WebViewClient {
 		try {
 			if (book2 != null)
 				book2.destroy();
+			parallelText = false;
 			book2 = new EpubManipulator(path, "2", context);
 			setView2(book2.getSpineElementPath(0));
 			book2.createTocFile();
@@ -91,7 +92,6 @@ public class EpubNavigator extends WebViewClient {
 	public boolean parallelText(BookEnum which, int firstLanguage,
 			int secondLanguage) {
 		boolean ok = true;
-		parallelText = true;
 		if (firstLanguage != -1) {
 			try {
 				if (which != BookEnum.first) {
@@ -118,6 +118,8 @@ public class EpubNavigator extends WebViewClient {
 		}
 		if (ok && firstLanguage != -1 && secondLanguage != -1)
 			setSynchronizedReadingActive(true);
+
+		parallelText = true;
 		return ok;
 	}
 
@@ -166,9 +168,9 @@ public class EpubNavigator extends WebViewClient {
 	}
 
 	public ViewStateEnum closeView1() {
-		if (parallelText == true) {
-			parallelText = false;
-		}
+
+		parallelText = false;
+
 		// book mode?
 		if ((book1.getPageIndex(pageOnView1) >= 0)
 				|| (pageOnView1.equals(book1.getCurrentPageURL()))) {
@@ -205,9 +207,9 @@ public class EpubNavigator extends WebViewClient {
 	}
 
 	public ViewStateEnum closeView2() {
-		if (parallelText == true) {
-			parallelText = false;
-		}
+
+		parallelText = false;
+
 		// book mode?
 		if ((book2 == null) || (book2.getPageIndex(pageOnView2) >= 0)
 				|| (pageOnView2.equals(book2.getCurrentPageURL()))) {

@@ -318,38 +318,57 @@ public class EpubReaderMain extends Activity {
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 
-		if (navigator.isExactlyOneBookOpen() == false) {
+		if (navigator.isParallelTextOn() == false
+				&& navigator.isExactlyOneBookOpen() == false) {
 
-			if (navigator.isParallelTextOn() == false) {
-				menu.findItem(R.id.meta2).setVisible(true);
+			menu.findItem(R.id.meta1).setVisible(true);
 
-				menu.findItem(R.id.toc2).setVisible(true);
-			}
+			menu.findItem(R.id.meta2).setVisible(true);
 
-			menu.findItem(R.id.Synchronize).setVisible(true);
+			menu.findItem(R.id.toc1).setVisible(true);
 
-			menu.findItem(R.id.Align).setVisible(true);
+			menu.findItem(R.id.toc2).setVisible(true);
+
+			menu.findItem(R.id.FirstFront).setVisible(true);
 
 			menu.findItem(R.id.SecondFront).setVisible(true);
 		}
 
-		else if (navigator.isExactlyOneBookOpen() == true) {
+		if (navigator.isExactlyOneBookOpen() == false) {
+
+			menu.findItem(R.id.Synchronize).setVisible(true);
+
+			menu.findItem(R.id.Align).setVisible(true);
+		}
+
+		if (navigator.isExactlyOneBookOpen() == true
+				|| navigator.isParallelTextOn() == true) {
+
+			menu.findItem(R.id.meta1).setVisible(false);
+
 			menu.findItem(R.id.meta2).setVisible(false);
+
+			menu.findItem(R.id.toc1).setVisible(false);
 
 			menu.findItem(R.id.toc2).setVisible(false);
 
+			menu.findItem(R.id.FirstFront).setVisible(false);
+
+			menu.findItem(R.id.SecondFront).setVisible(false);
+
+		}
+		if (navigator.isExactlyOneBookOpen() == true) {
 			menu.findItem(R.id.Synchronize).setVisible(false);
 
 			menu.findItem(R.id.Align).setVisible(false);
 
-			menu.findItem(R.id.SecondFront).setVisible(false);
 		}
 
 		// if there is only one view, option "changeSizes" is not visualized
 		if (stateView2.name().equalsIgnoreCase(getString(R.string.invisible)))
-			menu.findItem(R.id.changeSizes).setVisible(false);
+			menu.findItem(R.id.changeSize).setVisible(false);
 		else
-			menu.findItem(R.id.changeSizes).setVisible(true);
+			menu.findItem(R.id.changeSize).setVisible(true);
 
 		return true;
 	}
@@ -373,6 +392,12 @@ public class EpubReaderMain extends Activity {
 					getString(R.string.time));
 			startActivityForResult(goToChooser2, 0);
 			// invalidateOptionsMenu();
+			return true;
+
+		case R.id.Front:
+			if (navigator.isExactlyOneBookOpen() == true
+					|| navigator.isParallelTextOn() == true)
+				chooseLanguage(BookEnum.first);
 			return true;
 
 		case R.id.FirstFront:
@@ -416,6 +441,15 @@ public class EpubReaderMain extends Activity {
 			}
 			return true;
 
+		case R.id.Metadata:
+			if (navigator.isExactlyOneBookOpen() == true
+					|| navigator.isParallelTextOn() == true) {
+				navigator.displayMetadata(BookEnum.first);
+				updateView1(ViewStateEnum.notes);
+			} else {
+			}
+			return true;
+
 		case R.id.meta1:
 			if (navigator.displayMetadata(BookEnum.first))
 				updateView1(ViewStateEnum.notes);
@@ -429,6 +463,16 @@ public class EpubReaderMain extends Activity {
 			else
 				errorMessage(getString(R.string.error_metadataNotFound));
 			return true;
+
+		case R.id.tableOfContents:
+			if (navigator.isExactlyOneBookOpen() == true
+					|| navigator.isParallelTextOn() == true) {
+				navigator.displayTOC(BookEnum.first);
+				updateView1(ViewStateEnum.notes);
+			} else {
+			}
+			return true;
+
 		case R.id.toc1:
 			if (navigator.displayTOC(BookEnum.first))
 				updateView1(ViewStateEnum.notes);
@@ -441,7 +485,7 @@ public class EpubReaderMain extends Activity {
 			else
 				errorMessage(getString(R.string.error_tocNotFound));
 			return true;
-		case R.id.changeSizes:
+		case R.id.changeSize:
 			try {
 				DialogFragment newFragment = new SetPanelSize();
 				newFragment.show(getFragmentManager(), "");

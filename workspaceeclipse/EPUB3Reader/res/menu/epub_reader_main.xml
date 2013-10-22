@@ -3,7 +3,7 @@
     <item android:id="@+id/SecondEPUB" android:title="@string/Open_Book_2"></item>
     <item android:id="@+id/Front" android:title="@string/Enable_Parallel_Texts">
         <menu>
-            <item android:id="@+id/FirstFront" android:title="@string/From_Book_1"/>
+            <item android:id="@+id/FirstFront" android:title="@string/From_Book_1" android:visible="false"/>
             <item android:id="@+id/SecondFront" android:title="@string/From_Book_2" android:visible="false"/>
         </menu>
     </item>
@@ -18,17 +18,17 @@
    
     <item android:id="@+id/Metadata" android:title="@string/Show_Metadata">
         <menu>
-            <item android:id="@+id/meta1" android:title="@string/Book_1"/>
+            <item android:id="@+id/meta1" android:title="@string/Book_1" android:visible="false"/>
             <item android:id="@+id/meta2" android:title="@string/Book_2" android:visible="false"/>           
         </menu>
     </item>
     <item android:id="@+id/tableOfContents" android:title="@string/Table_of_Contents">
         <menu>
-            <item android:id="@+id/toc1" android:title="@string/Book_1"/>
-            <item android:id="@+id/toc2" android:title="@string/Book_2"/>
+            <item android:id="@+id/toc1" android:title="@string/Book_1" android:visible="false"/>
+            <item android:id="@+id/toc2" android:title="@string/Book_2" android:visible="false"/>
         </menu>
     </item>
-    <item android:id="@+id/changeSizes" android:title="@string/Change_Sizes" android:visible="true" android:checkable="false">
+    <item android:id="@+id/changeSize" android:title="@string/Change_Size" android:visible="true" android:checkable="false">
     </item>
     <item android:id="@+id/Style" android:title="@string/changeStyle" android:visible="false">
     </item>

@@ -50,7 +50,7 @@ public final class R {
         public static final int button_Red=0x7f09000e;
         public static final int button_White=0x7f090011;
         public static final int changeFontTextView=0x7f09000c;
-        public static final int changeSizes=0x7f090023;
+        public static final int changeSize=0x7f090023;
         public static final int fileListView=0x7f090012;
         public static final int firstViewport=0x7f090002;
         public static final int firstViewportLayout=0x7f090001;
@@ -85,7 +85,7 @@ public final class R {
         public static final int Book_1=0x7f05000c;
         public static final int Book_2=0x7f05000d;
         public static final int Cancel=0x7f05004e;
-        public static final int Change_Sizes=0x7f050010;
+        public static final int Change_Size=0x7f050010;
         public static final int CurrentPageBook1=0x7f05002a;
         public static final int CurrentPageBook2=0x7f050031;
         public static final int Enable_Parallel_Texts=0x7f050003;
