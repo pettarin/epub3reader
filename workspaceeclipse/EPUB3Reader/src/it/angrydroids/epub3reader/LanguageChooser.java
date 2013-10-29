@@ -20,11 +20,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-*/
+ */
 
 package it.angrydroids.epub3reader;
 
 import java.util.ArrayList;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -41,15 +42,14 @@ public class LanguageChooser extends DialogFragment {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Bundle b = this.getArguments();
-		languages = b.getStringArray("lang");
-		book = b.getString("tome");
+		languages = b.getStringArray(getString(R.string.lang));
+		book = b.getString(getString(R.string.tome));
 		selected = new boolean[languages.length];
 		number_selected_elements = 0;
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-		// TODO: string ext
-		builder.setTitle("Choose two languages");
+		builder.setTitle(getString(R.string.LanguageChooserTitle));
 		builder.setMultiChoiceItems(languages, selected,
 				new DialogInterface.OnMultiChoiceClickListener() {
 					@Override
@@ -69,39 +69,38 @@ public class LanguageChooser extends DialogFragment {
 					}
 				});
 
-		// TODO: string ext
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int id) {
-				int first = -1;
-				int second = -1;
+		builder.setPositiveButton(getString(R.string.OK),
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int id) {
+						int first = -1;
+						int second = -1;
 
-				// keep the first two selected
-				for (int i = 0; i < selected.length; i++) {
-					if (selected[i]) {
-						if (first == -1) {
-							first = i;
-						} else if (second == -1) {
-							second = i;
+						// keep the first two selected
+						for (int i = 0; i < selected.length; i++) {
+							if (selected[i]) {
+								if (first == -1) {
+									first = i;
+								} else if (second == -1) {
+									second = i;
+								}
+							}
 						}
+
+						if (number_selected_elements >= 2)
+							((EpubReaderMain) getActivity()).refreshLanguages(
+									BookEnum.valueOf(book), first, second,
+									number_selected_elements);
+
+						else if (number_selected_elements == 1)
+							((EpubReaderMain) getActivity()).refreshLanguages(
+									BookEnum.valueOf(book), first, -1,
+									number_selected_elements);
+
 					}
-				}
+				});
 
-				if (number_selected_elements >= 2)
-					((EpubReaderMain) getActivity()).refreshLanguages(
-							BookEnum.valueOf(book), first, second,
-							number_selected_elements);
-
-				else if (number_selected_elements == 1)
-					((EpubReaderMain) getActivity()).refreshLanguages(
-							BookEnum.valueOf(book), first, -1,
-							number_selected_elements);
-
-			}
-		});
-
-		// TODO: string ext
-		builder.setNegativeButton("Cancel",
+		builder.setNegativeButton(getString(R.string.Cancel),
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int id) {

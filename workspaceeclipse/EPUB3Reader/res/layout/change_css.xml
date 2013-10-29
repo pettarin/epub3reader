@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/changeFontTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/change_Font_Color"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/button_Black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/changeFontTextView"
+        android:background="@android:color/black"
+        android:text="B"
+        android:textColor="@android:color/black" />
+
+    <Button
+        android:id="@+id/button_Red"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button_Black"
+        android:layout_alignBottom="@+id/button_Black"
+        android:layout_toRightOf="@+id/button_Black"
+        android:text="R" />
+
+    <Button
+        android:id="@+id/button_Blue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button_Red"
+        android:layout_alignBottom="@+id/button_Red"
+        android:layout_centerHorizontal="true"
+        android:text="B" />
+
+    <Button
+        android:id="@+id/button_Green"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button_Blue"
+        android:layout_alignBottom="@+id/button_Blue"
+        android:layout_toLeftOf="@+id/button_White"
+        android:text="G" />
+
+    <Button
+        android:id="@+id/button_White"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button_Green"
+        android:layout_alignBottom="@+id/button_Green"
+        android:layout_alignParentRight="true"
+        android:text="W" />
+
+</RelativeLayout>

@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -39,15 +40,17 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import android.os.Environment;
-import android.util.Log;
-
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.domain.Spine;
 import nl.siegmann.epublib.domain.SpineReference;
+import nl.siegmann.epublib.domain.TOCReference;
+import nl.siegmann.epublib.domain.TableOfContents;
 import nl.siegmann.epublib.epub.EpubReader;
+import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
 
 public class EpubManipulator {
 	private Book book;
@@ -61,16 +64,24 @@ public class EpubManipulator {
 	// tells whether a page has a translation available
 	private List<Boolean> translations;
 	private String decompressedFolder;
-	// TODO: hardcoded string
+	private String pathOPF;
+	private static Context context;
 	private static String location = Environment.getExternalStorageDirectory()
 			+ "/epubtemp/";
+
 	private String fileName;
 	FileInputStream fs;
 
 	// book from fileName
-	public EpubManipulator(String fileName, String destFolder) throws Exception {
+	public EpubManipulator(String fileName, String destFolder,
+			Context theContext) throws Exception {
+
 		List<String> spineElements;
 		List<SpineReference> spineList;
+
+		if (context == null) {
+			context = theContext;
+		}
 
 		this.fs = new FileInputStream(fileName);
 		this.book = (new EpubReader()).readEpub(fs);
@@ -92,7 +103,7 @@ public class EpubManipulator {
 
 		unzip(fileName, location + decompressedFolder);
 
-		String pathOPF = getPathOPF(location + decompressedFolder);
+		pathOPF = getPathOPF(location + decompressedFolder);
 
 		for (int i = 0; i < spineElements.size(); ++i) {
 			// TODO: is there a robust path joiner in the java libs?
@@ -108,9 +119,13 @@ public class EpubManipulator {
 
 	// book from already decompressed folder
 	public EpubManipulator(String fileName, String folder, int spineIndex,
-			int language) throws Exception {
+			int language, Context theContext) throws Exception {
 		List<String> spineElements;
 		List<SpineReference> spineList;
+
+		if (context == null) {
+			context = theContext;
+		}
 
 		this.fs = new FileInputStream(fileName);
 		this.book = (new EpubReader()).readEpub(fs);
@@ -125,7 +140,7 @@ public class EpubManipulator {
 		pages(spineList, spineElements);
 		this.pageCount = spineElements.size();
 		this.spineElementPaths = new String[spineElements.size()];
-		String pathOPF = "";
+
 		pathOPF = getPathOPF(location + folder);
 
 		for (int i = 0; i < spineElements.size(); ++i) {
@@ -212,8 +227,8 @@ public class EpubManipulator {
 				+ "/META-INF/container.xml"));
 		String line;
 		while ((line = br.readLine()) != null) {
-			if (line.indexOf("full-path") > -1) {
-				int start = line.indexOf("full-path");
+			if (line.indexOf(getS(R.string.full_path)) > -1) {
+				int start = line.indexOf(getS(R.string.full_path));
 				int start2 = line.indexOf("\"", start);
 				int stop2 = line.indexOf("\"", start2 + 1);
 				if (start2 > -1 && stop2 > start2) {
@@ -225,7 +240,8 @@ public class EpubManipulator {
 		br.close();
 
 		// in case the OPF file is in the root directory
-		pathOPF = "./" + pathOPF;
+
+		// pathOPF = "./" + pathOPF;
 		// remove the OPF file name and the preceding '/'
 		int last = pathOPF.lastIndexOf('/');
 		if (last > -1) {
@@ -255,7 +271,7 @@ public class EpubManipulator {
 			String currentEntry = entry.getName();
 			File destFile = new File(unzipDestinationDirectory, currentEntry);
 
-			if (currentEntry.endsWith(".zip")) {
+			if (currentEntry.endsWith(getS(R.string.zip))) {
 				zipFiles.add(destFile.getAbsolutePath());
 			}
 
@@ -288,8 +304,10 @@ public class EpubManipulator {
 		for (Iterator iter = zipFiles.iterator(); iter.hasNext();) {
 			String zipName = (String) iter.next();
 			unzip(zipName,
-					destinationDirectory + File.separatorChar
-							+ zipName.substring(0, zipName.lastIndexOf(".zip")));
+					destinationDirectory
+							+ File.separatorChar
+							+ zipName.substring(0,
+									zipName.lastIndexOf(getS(R.string.zip))));
 		}
 	}
 
@@ -336,12 +354,15 @@ public class EpubManipulator {
 			extension = spineElement.substring(spineElement.lastIndexOf("."));
 			spineElement = spineElement.substring(0,
 					spineElement.lastIndexOf(this.availableLanguages.get(0)));
-			;
+
 			spineElement = spineElement + this.availableLanguages.get(lang)
 					+ extension;
 		}
 
 		this.currentPage = spineElement;
+
+		// addCSS(spineElement, EpubReaderMain.getColor()); work in progress
+
 		return spineElement;
 	}
 
@@ -359,107 +380,148 @@ public class EpubManipulator {
 	public String metadata() {
 		List<String> tmp;
 		Metadata metadata = book.getMetadata();
-		String html = "<html><body><table>";
+		String html = getS(R.string.htmlBodyTableOpen);
 
 		// Titles
 		tmp = metadata.getTitles();
 		if (tmp.size() > 0) {
-			html += "<tr><td>Titles:</td>";
+			html += getS(R.string.titlesMeta);
 			html += "<td>" + tmp.get(0) + "</td></tr>";
 			for (int i = 1; i < tmp.size(); i++)
-				html += "<tr><td></td><td>" + tmp.get(0) + "</td></tr>";
+				html += "<tr><td></td><td>" + tmp.get(i) + "</td></tr>";
 		}
 
 		// Authors
-		List<Author> autori = metadata.getAuthors();
-		if (autori.size() > 0) {
-			html += "<tr><td>Authors:</td>";
-			html += "<td>" + autori.get(0).getFirstname() + " "
-					+ autori.get(0).getLastname() + "</td></tr>";
-			for (int i = 1; i < autori.size(); i++)
-				html += "<tr><td></td><td>" + autori.get(0).getFirstname()
-						+ " " + autori.get(0).getLastname() + "</td></tr>";
+		List<Author> authors = metadata.getAuthors();
+		if (authors.size() > 0) {
+			html += getS(R.string.authorsMeta);
+			html += "<td>" + authors.get(0).getFirstname() + " "
+					+ authors.get(0).getLastname() + "</td></tr>";
+			for (int i = 1; i < authors.size(); i++)
+				html += "<tr><td></td><td>" + authors.get(i).getFirstname()
+						+ " " + authors.get(i).getLastname() + "</td></tr>";
 		}
 
 		// Contributors
-		autori = metadata.getContributors();
-		if (autori.size() > 0) {
-			html += "<tr><td>Contributors:</td>";
-			html += "<td>" + autori.get(0).getFirstname() + " "
-					+ autori.get(0).getLastname() + "</td></tr>";
-			for (int i = 1; i < autori.size(); i++)
-				html += "<tr><td></td><td>" + autori.get(0).getFirstname()
-						+ " " + autori.get(0).getLastname() + "</td></tr>";
+		authors = metadata.getContributors();
+		if (authors.size() > 0) {
+			html += getS(R.string.contributorsMeta);
+			html += "<td>" + authors.get(0).getFirstname() + " "
+					+ authors.get(0).getLastname() + "</td></tr>";
+			for (int i = 1; i < authors.size(); i++) {
+				html += "<tr><td></td><td>" + authors.get(i).getFirstname()
+						+ " " + authors.get(i).getLastname() + "</td></tr>";
+			}
 		}
 
 		// TODO: extend lib to get multiple languages?
 		// Language
-		html += "<tr><td>Language:</td><td>" + metadata.getLanguage()
+		html += getS(R.string.languageMeta) + metadata.getLanguage()
 				+ "</td></tr>";
 
 		// Publishers
 		tmp = metadata.getPublishers();
 		if (tmp.size() > 0) {
-			html += "<tr><td>Publishers:</td>";
+			html += getS(R.string.publishersMeta);
 			html += "<td>" + tmp.get(0) + "</td></tr>";
 			for (int i = 1; i < tmp.size(); i++)
-				html += "<tr><td></td><td>" + tmp.get(0) + "</td></tr>";
+				html += "<tr><td></td><td>" + tmp.get(i) + "</td></tr>";
 		}
 
 		// Types
 		tmp = metadata.getTypes();
 		if (tmp.size() > 0) {
-			html += "<tr><td>Types:</td>";
+			html += getS(R.string.typesMeta);
 			html += "<td>" + tmp.get(0) + "</td></tr>";
 			for (int i = 1; i < tmp.size(); i++)
-				html += "<tr><td></td><td>" + tmp.get(0) + "</td></tr>";
+				html += "<tr><td></td><td>" + tmp.get(i) + "</td></tr>";
 		}
 
 		// Descriptions
 		tmp = metadata.getDescriptions();
 		if (tmp.size() > 0) {
-			html += "<tr><td>Descriptions:</td>";
+			html += getS(R.string.descriptionsMeta);
 			html += "<td>" + tmp.get(0) + "</td></tr>";
 			for (int i = 1; i < tmp.size(); i++)
-				html += "<tr><td></td><td>" + tmp.get(0) + "</td></tr>";
+				html += "<tr><td></td><td>" + tmp.get(i) + "</td></tr>";
 		}
 
 		// Rights
 		tmp = metadata.getRights();
 		if (tmp.size() > 0) {
-			html += "<tr><td>Rights:</td>";
+			html += getS(R.string.rightsMeta);
 			html += "<td>" + tmp.get(0) + "</td></tr>";
 			for (int i = 1; i < tmp.size(); i++)
-				html += "<tr><td></td><td>" + tmp.get(0) + "</td></tr>";
+				html += "<tr><td></td><td>" + tmp.get(i) + "</td></tr>";
 		}
 
-		html += "</table></body></html>";
+		html += getS(R.string.tablebodyhtmlClose);
 		return html;
+	}
+
+	// Create an html file, which contain the TOC, in the EPUB folder
+	public void createTocFile() {
+		List<TOCReference> tmp;
+		TableOfContents toc = book.getTableOfContents();
+		String html = getS(R.string.htmlBodyTableOpen);
+
+		tmp = toc.getTocReferences();
+
+		if (tmp.size() > 0) {
+			html += getS(R.string.tocReference);
+			for (int i = 0; i < tmp.size(); i++) {
+				String path = "file://" + location + decompressedFolder + "/"
+						+ pathOPF + "/" + tmp.get(i).getCompleteHref();
+
+				html += "<tr><td></td><td>" + "<a href=\"" + path + "\">"
+						+ tmp.get(i).getTitle() + "</a>" + "</td></tr>";
+
+				// pre-order traversal?
+				List<TOCReference> children = tmp.get(i).getChildren();
+
+				for (int j = 0; j < children.size(); j++) {
+					String childrenPath = "file://" + location
+							+ decompressedFolder + "/" + pathOPF + "/"
+							+ children.get(j).getCompleteHref();
+
+					html += "<tr><td></td><td>" + "<a href=\"" + childrenPath
+							+ "\">" + children.get(j).getTitle() + "</a>"
+							+ "</td></tr>";
+				}
+			}
+		}
+
+		html += getS(R.string.tablebodyhtmlClose);
+
+		// write down the html file
+		String filePath = location + decompressedFolder + "/Toc.html";
+		try {
+			File file = new File(filePath);
+			FileWriter fw = new FileWriter(file);
+			fw.write(html);
+			fw.flush();
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// return the path of the Toc.html file
+	public String tableOfContents() {
+		return "File://" + location + decompressedFolder + "/Toc.html";
 	}
 
 	// determine whether a book has the requested page
 	// if so, return its index; return -1 otherwise
 	public int getPageIndex(String page) {
 		int result = -1;
-		String[] split;
 		String lang;
-
-		/*
-		TODO: hardcoded strings
-		NOTE: what were these 3 lines supposed to do?
-
-		split = page.split("OEBPS");
-		if (split.length > 1)
-			page = split[0] + "./OEBPS" + split[1];
-		*/
-
-		split = page.split("\\.");
 
 		lang = getPageLanguage(page);
 		if ((this.availableLanguages.size() > 0) && (lang != "")) {
 			page = page.substring(0, page.lastIndexOf(lang))
-					+ this.availableLanguages.get(0) + "."
-					+ split[split.length - 1];
+					+ this.availableLanguages.get(0)
+					+ page.substring(page.lastIndexOf("."));
 		}
 		for (int i = 0; i < this.spineElementPaths.length && result == -1; i++) {
 			if (page.equals(this.spineElementPaths[i])) {
@@ -484,14 +546,14 @@ public class EpubManipulator {
 				res = true;
 			} catch (Exception e) {
 				res = false;
-				Log.e("goToPage error:", e.getMessage());
+				Log.e(getS(R.string.error_goToPage), e.getMessage());
 			}
 		}
 		return res;
 	}
 
 	// return the language of the page according to the
-	//  ISO 639-1 naming convention:
+	// ISO 639-1 naming convention:
 	// foo.XX.html where X \in [a-z]
 	// or an empty string if language not found
 	public String getPageLanguage(String page) {
@@ -505,6 +567,69 @@ public class EpubManipulator {
 			}
 		}
 		return "";
+	}
+
+	// TODO work in progress
+	public void addCSS(String path, String color) { // metodo per modificare
+		// CSS
+		path = path.replace("file:///", "");
+		String source = readPage(path);
+
+		source = source.replace("<style type=\"text/css\">*</style></head>",
+				"</head>");
+
+		String css = "<style type=\"text/css\">\n"; // denota carattere
+													// speciale \
+		// Test: ridimensionamento font
+		css = css + "p{\n\tfont-size: 120%\n}\n";
+
+		css = css + "body{color:" + color + ";}";
+
+		// Tag di chiusura
+		css = css + "</style>";
+
+		source = source.replace("</head>", css + "</head>");
+
+		writePage(path, source);
+	}
+
+	// TODO don't work properly
+	public boolean deleteCSS(String path) {
+		path = path.replace("file:///", "");
+		String source = readPage(path);
+		source = source.replace("<style type=\"text/css\">.</style></head>",
+				"</head>");
+		return writePage(path, source);
+	}
+
+	// TODO work in progress
+	private String readPage(String path) {
+		try {
+			FileInputStream input = new FileInputStream(path);
+			byte[] fileData = new byte[input.available()];
+
+			input.read(fileData);
+			input.close();
+
+			String xhtml = new String(fileData);
+			return xhtml;
+		} catch (IOException e) {
+			return "";
+		}
+	}
+
+	// TODO work in progress
+	private boolean writePage(String path, String xhtml) {
+		try {
+			File file = new File(path);
+			FileWriter fw = new FileWriter(file);
+			fw.write(xhtml);
+			fw.flush();
+			fw.close();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
 	}
 
 	public int getCurrentSpineElementIndex() {
@@ -529,5 +654,11 @@ public class EpubManipulator {
 
 	public String getDecompressedFolder() {
 		return decompressedFolder;
+	}
+
+	public static String getS(int id) {
+
+		return context.getResources().getString(id);
+
 	}
 }
