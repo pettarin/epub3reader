@@ -20,18 +20,20 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-*/
+ */
 
 package it.angrydroids.epub3reader;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.MotionEventCompat;
 import android.util.DisplayMetrics;
 import android.view.Menu;
@@ -40,6 +42,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -66,6 +69,9 @@ public class EpubReaderMain extends Activity {
 	protected ViewStateEnum stateView2;
 	protected BookEnum bookSelector;
 	protected float swipeOriginX, swipeOriginY;
+	protected static float firstViewSize = (float) 0.5;
+	protected boolean syncScrollActivated = true;
+	protected static String color = "#000000"; // work in progress
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +97,7 @@ public class EpubReaderMain extends Activity {
 		screenHeight = metrics.heightPixels;
 		// -----
 
-		navigator = new EpubNavigator();
+		navigator = new EpubNavigator(getBaseContext());
 
 		// enable JavaScript for cool things to happen!
 		view1.getSettings().setJavaScriptEnabled(true);
@@ -105,9 +111,16 @@ public class EpubReaderMain extends Activity {
 		view1.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
+
 				if (stateView1 == ViewStateEnum.books) {
 					swipePage(v, event, BookEnum.first);
 				}
+
+				if (syncScrollActivated == true
+						&& stateView2 != ViewStateEnum.invisible) {
+					// syncScroll(v, view2, event); work in progress
+				}
+
 				WebView view = (WebView) v;
 				return view.onTouchEvent(event);
 			}
@@ -150,16 +163,18 @@ public class EpubReaderMain extends Activity {
 		view1.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
-				if (stateView1 == ViewStateEnum.books) {
+				if (stateView1 == ViewStateEnum.books
+						|| stateView1 == ViewStateEnum.notes) {
 					Message msg = new Message();
 					msg.setTarget(new Handler() {
 						@Override
 						public void handleMessage(Message msg) {
 							super.handleMessage(msg);
-							// TODO: hardcoded string
-							String url = msg.getData().getString("url");
+							String url = msg.getData().getString(
+									getString(R.string.url));
 							if (url != null)
-								if (stateView1 == ViewStateEnum.books) {
+								if (stateView1 == ViewStateEnum.books
+										|| stateView1 == ViewStateEnum.notes) {
 									updateView2(ViewStateEnum.notes);
 									navigator.setView2(url);
 								} else {
@@ -178,7 +193,7 @@ public class EpubReaderMain extends Activity {
 				try {
 					updateView1(navigator.setView1(url));
 				} catch (Exception e) {
-					errorMessage("Cannot load page");
+					errorMessage(getString(R.string.error_LoadPage));
 				}
 				return true;
 			}
@@ -192,18 +207,19 @@ public class EpubReaderMain extends Activity {
 					@Override
 					public void handleMessage(Message msg) {
 						super.handleMessage(msg);
-						// TODO: hardcoded string
-						String url = msg.getData().getString("url");
+						String url = msg.getData().getString(
+								getString(R.string.url));
 						if (url != null) {
 							try {
-								if (stateView2 == ViewStateEnum.books) {
+								if (stateView2 == ViewStateEnum.books
+										|| stateView2 == ViewStateEnum.notes) {
 									updateView1(ViewStateEnum.notes);
 									navigator.setView1(url);
 								} else {
 									navigator.setView2(url);
 								}
 							} catch (Exception e) {
-								errorMessage("Cannot load page");
+								errorMessage(getString(R.string.error_LoadPage));
 							}
 						}
 
@@ -219,7 +235,7 @@ public class EpubReaderMain extends Activity {
 				try {
 					updateView2(navigator.setView2(url));
 				} catch (Exception e) {
-					errorMessage("Cannot load the page");
+					errorMessage(getString(R.string.error_LoadPage));
 				}
 				return true;
 			}
@@ -228,8 +244,7 @@ public class EpubReaderMain extends Activity {
 
 		// ----- LOAD STATE
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-		// TODO: hardcoded string
-		if (preferences.getBoolean("bookOpen", false)) {
+		if (preferences.getBoolean(getString(R.string.bookOpen), false)) {
 			loadState(preferences);
 		} else {
 			bookSelector = BookEnum.first;
@@ -244,19 +259,18 @@ public class EpubReaderMain extends Activity {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 		if (resultCode == Activity.RESULT_OK) {
-			// TODO: hardcoded string
-			String path = data.getStringExtra("bpath");
+			String path = data.getStringExtra(getString(R.string.bpath));
 
 			if (bookSelector == BookEnum.first) {
 				if (navigator.openBook1(path)) {
 					updateView1(ViewStateEnum.books);
 				} else {
-					errorMessage("Cannot load the book");
+					errorMessage(getString(R.string.error_LoadBook));
 				}
 			} else if (navigator.openBook2(path)) {
 				updateView2(ViewStateEnum.books);
 			} else {
-				errorMessage("Cannot load the book");
+				errorMessage(getString(R.string.error_LoadBook));
 			}
 		} else if (!navigator.isAtLeastOneBookOpen()) {
 			finish();
@@ -302,23 +316,88 @@ public class EpubReaderMain extends Activity {
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onPrepareOptionsMenu(Menu menu) {
 
-		//TODO: hardcoded strings
+		if (navigator.isParallelTextOn() == false
+				&& navigator.isExactlyOneBookOpen() == false) {
+
+			menu.findItem(R.id.meta1).setVisible(true);
+
+			menu.findItem(R.id.meta2).setVisible(true);
+
+			menu.findItem(R.id.toc1).setVisible(true);
+
+			menu.findItem(R.id.toc2).setVisible(true);
+
+			menu.findItem(R.id.FirstFront).setVisible(true);
+
+			menu.findItem(R.id.SecondFront).setVisible(true);
+		}
+
+		if (navigator.isExactlyOneBookOpen() == false) {
+
+			menu.findItem(R.id.Synchronize).setVisible(true);
+
+			menu.findItem(R.id.Align).setVisible(true);
+		}
+
+		if (navigator.isExactlyOneBookOpen() == true
+				|| navigator.isParallelTextOn() == true) {
+
+			menu.findItem(R.id.meta1).setVisible(false);
+
+			menu.findItem(R.id.meta2).setVisible(false);
+
+			menu.findItem(R.id.toc1).setVisible(false);
+
+			menu.findItem(R.id.toc2).setVisible(false);
+
+			menu.findItem(R.id.FirstFront).setVisible(false);
+
+			menu.findItem(R.id.SecondFront).setVisible(false);
+
+		}
+		if (navigator.isExactlyOneBookOpen() == true) {
+			menu.findItem(R.id.Synchronize).setVisible(false);
+
+			menu.findItem(R.id.Align).setVisible(false);
+
+		}
+
+		// if there is only one view, option "changeSizes" is not visualized
+		if (stateView2.name().equalsIgnoreCase(getString(R.string.invisible)))
+			menu.findItem(R.id.changeSize).setVisible(false);
+		else
+			menu.findItem(R.id.changeSize).setVisible(true);
+
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
 
 		switch (item.getItemId()) {
 		case R.id.FirstEPUB:
 			bookSelector = BookEnum.first;
 			Intent goToChooser1 = new Intent(this, FileChooser.class);
-			goToChooser1.putExtra("Second", "time");
+			goToChooser1.putExtra(getString(R.string.second),
+					getString(R.string.time));
 			startActivityForResult(goToChooser1, 0);
 			return true;
 
 		case R.id.SecondEPUB:
 			bookSelector = BookEnum.second;
 			Intent goToChooser2 = new Intent(this, FileChooser.class);
-			goToChooser2.putExtra("Second", "time");
+			goToChooser2.putExtra(getString(R.string.second),
+					getString(R.string.time));
 			startActivityForResult(goToChooser2, 0);
+			// invalidateOptionsMenu();
+			return true;
+
+		case R.id.Front:
+			if (navigator.isExactlyOneBookOpen() == true
+					|| navigator.isParallelTextOn() == true)
+				chooseLanguage(BookEnum.first);
 			return true;
 
 		case R.id.FirstFront:
@@ -329,17 +408,17 @@ public class EpubReaderMain extends Activity {
 			if (navigator.isExactlyOneBookOpen() == false)
 				chooseLanguage(BookEnum.second);
 			else
-				errorMessage("Only one book open!");
+				errorMessage(getString(R.string.error_onlyOneBookOpen));
 			return true;
 
 		case R.id.PconS:
 			try {
 				boolean yes = navigator.synchronizeView1WithView2();
 				if (!yes) {
-					errorMessage("Only one book open!");
+					errorMessage(getString(R.string.error_onlyOneBookOpen));
 				}
 			} catch (Exception e) {
-				errorMessage("Cannot synchronize");
+				errorMessage(getString(R.string.error_cannotSynchronize));
 			}
 			return true;
 
@@ -347,10 +426,10 @@ public class EpubReaderMain extends Activity {
 			try {
 				boolean ok = navigator.synchronizeView2WithView1();
 				if (!ok) {
-					errorMessage("Only one book open!");
+					errorMessage(getString(R.string.error_onlyOneBookOpen));
 				}
 			} catch (Exception e) {
-				errorMessage("Cannot synchronize");
+				errorMessage(getString(R.string.error_cannotSynchronize));
 			}
 			return true;
 
@@ -358,25 +437,70 @@ public class EpubReaderMain extends Activity {
 
 			boolean sync = navigator.flipSynchronizedReadingActive();
 			if (!sync) {
-				errorMessage("Only one book open!");
+				errorMessage(getString(R.string.error_onlyOneBookOpen));
 			}
+			return true;
 
+		case R.id.Metadata:
+			if (navigator.isExactlyOneBookOpen() == true
+					|| navigator.isParallelTextOn() == true) {
+				navigator.displayMetadata(BookEnum.first);
+				updateView1(ViewStateEnum.notes);
+			} else {
+			}
 			return true;
 
 		case R.id.meta1:
 			if (navigator.displayMetadata(BookEnum.first))
 				updateView1(ViewStateEnum.notes);
 			else
-				errorMessage("Metadata not found!");
+				errorMessage(getString(R.string.error_metadataNotFound));
 			return true;
 
 		case R.id.meta2:
 			if (navigator.displayMetadata(BookEnum.second))
 				updateView2(ViewStateEnum.notes);
 			else
-				errorMessage("Metadata not found!");
+				errorMessage(getString(R.string.error_metadataNotFound));
 			return true;
 
+		case R.id.tableOfContents:
+			if (navigator.isExactlyOneBookOpen() == true
+					|| navigator.isParallelTextOn() == true) {
+				navigator.displayTOC(BookEnum.first);
+				updateView1(ViewStateEnum.notes);
+			} else {
+			}
+			return true;
+
+		case R.id.toc1:
+			if (navigator.displayTOC(BookEnum.first))
+				updateView1(ViewStateEnum.notes);
+			else
+				errorMessage(getString(R.string.error_tocNotFound));
+			return true;
+		case R.id.toc2:
+			if (navigator.displayTOC(BookEnum.second))
+				updateView1(ViewStateEnum.notes);
+			else
+				errorMessage(getString(R.string.error_tocNotFound));
+			return true;
+		case R.id.changeSize:
+			try {
+				DialogFragment newFragment = new SetPanelSize();
+				newFragment.show(getFragmentManager(), "");
+			} catch (Exception e) {
+				errorMessage(getString(R.string.error_cannotChangeSizes));
+			}
+			return true;
+		case R.id.Style: // work in progress...
+			try {
+				DialogFragment newFragment = new ChangeCSSMenu();
+				newFragment.show(getFragmentManager(), "");
+			} catch (Exception e) {
+				errorMessage(getString(R.string.error_CannotChangeStyle));
+			}
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -403,13 +527,13 @@ public class EpubReaderMain extends Activity {
 				try {
 					navigator.goToNextChapter(which);
 				} catch (Exception e) {
-					errorMessage("Cannot turn page!");
+					errorMessage(getString(R.string.error_cannotTurnPage));
 				}
 			} else if ((diffX < -quarterWidth) && (absDiffX > absDiffY)) {
 				try {
 					navigator.goToPrevChapter(which);
 				} catch (Exception e) {
-					errorMessage("Cannot turn page!");
+					errorMessage(getString(R.string.error_cannotTurnPage));
 				}
 			}
 			break;
@@ -417,8 +541,27 @@ public class EpubReaderMain extends Activity {
 
 	}
 
+	// TODO work in progress, navigator?
+	/*
+	 * protected void syncScroll(View v1, View v2, MotionEvent event) { int
+	 * action = MotionEventCompat.getActionMasked(event);
+	 * 
+	 * switch (action) { case (MotionEvent.ACTION_DOWN): swipeOriginY =
+	 * event.getY(); swipeOriginX = event.getX(); break;
+	 * 
+	 * case (MotionEvent.ACTION_UP): float endY = event.getY(); float endX =
+	 * event.getX(); float diffY = swipeOriginY - endY; float diffX =
+	 * swipeOriginX - endX; if (Math.abs(diffY) < Math.abs(diffX) ||
+	 * Math.abs(diffY) > 300) // solo // per // piccoli // scroll { }
+	 * 
+	 * else { v2.scrollBy(0, (int) diffY); }
+	 * 
+	 * break; } }
+	 */
+
 	// Language Selection
 	public void chooseLanguage(BookEnum which) {
+
 		String[] languages;
 		if (which == BookEnum.first) {
 			languages = navigator.getLanguagesBook1();
@@ -427,15 +570,14 @@ public class EpubReaderMain extends Activity {
 		}
 		if (languages.length > 0) {
 			Bundle bundle = new Bundle();
-			//TODO: hardcoded strings
-			bundle.putString("tome", which.toString());
-			bundle.putStringArray("lang", languages);
+			bundle.putString(getString(R.string.tome), which.toString());
+			bundle.putStringArray(getString(R.string.lang), languages);
 
 			LanguageChooser langChooser = new LanguageChooser();
 			langChooser.setArguments(bundle);
 			langChooser.show(getFragmentManager(), "");
 		} else {
-			errorMessage("No other languages!");
+			errorMessage(getString(R.string.error_noOtherLanguages));
 		}
 	}
 
@@ -450,27 +592,60 @@ public class EpubReaderMain extends Activity {
 		if ((which == BookEnum.first) || (numberOfLanguages > 1)) {
 			updateView1(ViewStateEnum.books);
 		}
-		if ((which == BookEnum.second) || (numberOfLanguages > 1) ) {
+		if ((which == BookEnum.second) || (numberOfLanguages > 1)) {
 			updateView2(ViewStateEnum.books);
+		}
+	}
+
+	// change the views size, changing the weight
+	protected void changeViewsSize(float weight1) {
+
+		firstViewSize = weight1;
+
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			weight1 = weight1 + (float) 0.01;
+
+			LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
+					0, LayoutParams.MATCH_PARENT, weight1);
+			layoutView1.setLayoutParams(params1);
+
+			LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
+					0, LayoutParams.MATCH_PARENT, (1 - weight1));
+			layoutView2.setLayoutParams(params2);
+		} else {
+			LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(
+					LayoutParams.MATCH_PARENT, 0, weight1);
+			layoutView1.setLayoutParams(params1);
+
+			LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(
+					LayoutParams.MATCH_PARENT, 0, (1 - weight1));
+			layoutView2.setLayoutParams(params2);
 		}
 	}
 
 	// Save/Load State
 	protected void saveState(Editor editor) {
-		//TODO: hardcoded strings
-		editor.putString("FirstState", stateView1.name());
-		editor.putString("SecondState", stateView2.name());
+		editor.putString(getString(R.string.firstState), stateView1.name());
+		editor.putString(getString(R.string.secondState), stateView2.name());
+
+		editor.putFloat(getString(R.string.firstViewSize), getFirstViewWeight());
+
 		navigator.saveState(editor);
 	}
 
 	protected void loadState(SharedPreferences preferences) {
-		//TODO: hardcoded strings
-		updateView1(ViewStateEnum.valueOf(preferences.getString("FirstState",
-				ViewStateEnum.books.name())));
-		updateView2(ViewStateEnum.valueOf(preferences.getString("SecondState",
-				ViewStateEnum.invisible.name())));
+		updateView1(ViewStateEnum.valueOf(preferences.getString(
+				getString(R.string.firstState), ViewStateEnum.books.name())));
+		updateView2(ViewStateEnum
+				.valueOf(preferences.getString(getString(R.string.secondState),
+						ViewStateEnum.invisible.name())));
+
+		float viewSize = preferences.getFloat(
+				getString(R.string.firstViewSize), getFirstViewWeight());
+		changeViewsSize(viewSize);
+
 		if (!navigator.loadState(preferences))
-			errorMessage("Cannot load the application/book state");
+			errorMessage(getString(R.string.error_cannotLoadState));
 	}
 
 	@Override
@@ -488,6 +663,18 @@ public class EpubReaderMain extends Activity {
 
 	public static WebView getView2() {
 		return view2;
+	}
+
+	public static String getColor() { // work in progress
+		return color;
+	}
+
+	public static void setColor(String my_color) { // work in progress
+		color = my_color;
+	}
+
+	public static float getFirstViewWeight() {
+		return firstViewSize;
 	}
 
 	public void errorMessage(String message) {

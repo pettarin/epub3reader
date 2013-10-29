@@ -10,18 +10,8 @@
         android:id="@+id/firstViewportLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.50"
-        android:layout_marginRight="@dimen/margin_bottom"
+        android:layout_weight="0.51"
          >
-
-        <Button
-            android:id="@+id/topFirstView"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/horizontal_button_height"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:alpha="0.0"
-            android:padding="@dimen/all_margin" />
 
         <Button
             android:id="@+id/bottomFirstView"
@@ -38,14 +28,26 @@
             android:layout_height="fill_parent"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true" 
+            android:layout_marginRight="@dimen/margin_bottom"
+            />
+
+        <Button
+            android:id="@+id/topFirstView"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/horizontal_button_height"
+            android:layout_alignBaseline="@+id/topRightFirstView"
+            android:layout_alignBottom="@+id/topRightFirstView"
+            android:layout_alignParentLeft="true"
+            android:alpha="0.0"
+            android:padding="@dimen/all_margin" />
 
         <Button
             android:id="@+id/topRightFirstView"
             android:layout_width="@dimen/close_button_dimen"
             android:layout_height="@dimen/close_button_dimen"
-            android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/firstViewport"
             android:layout_margin="@dimen/all_margin"
             android:padding="@dimen/all_margin"
             android:visibility="visible" />
