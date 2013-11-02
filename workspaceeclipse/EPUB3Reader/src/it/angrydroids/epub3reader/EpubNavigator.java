@@ -454,6 +454,17 @@ public class EpubNavigator extends WebViewClient {
 		return ok;
 	}
 
+	public void changeCSS(BookEnum which) {
+		if (which == BookEnum.first) {
+			book1.addCSS(EpubReaderMain.getSettings());
+			loadPageIntoView1(pageOnView1);
+		}
+		if (!exactlyOneBookOpen && which == BookEnum.second) {
+			book2.addCSS(EpubReaderMain.getSettings());
+			loadPageIntoView2(pageOnView2);
+		}
+	}
+
 	public boolean isExactlyOneBookOpen() {
 		return exactlyOneBookOpen;
 	}

@@ -84,4 +84,44 @@
     <string name="SetSizeTitle">First Panel Size:</string>
     <string name="LanguageChooserTitle">Choose two languages:</string>
     <string name="parallelTextBool">parallelTextBool</string>
+    <string-array name="ColorFont">
+        <item >Black</item>
+        <item >Red</item>
+        <item >Green</item>
+        <item >Blue</item>
+        <item >White</item>
+    </string-array>
+        <string name="ChangeBackgroundColor">Change Background Color:</string>
+        <string-array name="ColorBack">
+            <item >White</item>
+            <item >Red</item>
+            <item >Green</item>
+            <item >Blue</item>
+            <item >Black</item>
+        </string-array>
+            <string name="syncScroll">Sync. Scroll</string>
+            <string name="ChangeFont">Change Font:</string>
+            <string-array name="FontStyle">
+                <item >Arial</item>
+                <item >Times New Roman</item>
+                <item >Courier New</item>
+            </string-array>
+            <string name="Arial">Arial</string>
+            <string name="Serif">Serif</string>
+            <string name="Monospace">Monospace</string>
+            <string name="FontSize">Font Size:</string>
+            <string name="LineHeight">Line Height:</string>
+            <string name="TextAlign">Text Align:</string>
+            <string-array name="testAlignOption">
+                <item >Left</item>
+                <item >Center</item>
+                <item >Right</item>
+            </string-array>
+            <string name="Left_Align">Left</string>
+            <string name="Center_Align">Center</string>
+            <string name="Right_Align">Right</string>
+            <string name="DefaultSettings">Default</string>
+            <string name="px">px</string>
+            <string name="open">Open...</string>
+            <string name="Margin">Margin(px):</string>
 </resources>

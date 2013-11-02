@@ -12,52 +12,225 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:text="@string/change_Font_Color"
-        android:textSize="24sp" />
+        android:textSize="18sp" />
 
-    <Button
-        android:id="@+id/button_Black"
+    <TextView
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/changeFontTextView"
-        android:background="@android:color/black"
+        android:layout_below="@+id/spinnerColor"
+        android:text="@string/ChangeBackgroundColor"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/spinnerBack"
+        android:text="@string/ChangeFont"
+        android:textSize="18sp" />
+
+    <Spinner
+        android:id="@+id/spinnerFontFamily"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView2"
+        android:entries="@array/FontStyle" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editText_Size"
+        android:layout_alignBottom="@+id/editText_Size"
+        android:layout_toRightOf="@+id/editText_Size"
+        android:text="%"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editTextLH"
+        android:layout_alignBottom="@+id/editTextLH"
+        android:layout_toRightOf="@+id/editTextLH"
+        android:text="@string/px"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <EditText
+        android:id="@+id/editTextLH"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/textView4"
+        android:layout_below="@+id/spinnerFontFamily"
+        android:layout_marginTop="15dp"
+        android:ems="10"
+        android:inputType="number"
+        android:maxLength="2" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/textView7"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/spinnerFontFamily"
+        android:text="@string/LineHeight"
+        android:textSize="18sp" />
+
+    <Spinner
+        android:id="@+id/spinnerBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spinnerColor"
+        android:layout_toRightOf="@+id/textView1"
+        android:entries="@array/ColorBack" />
+
+    <Spinner
+        android:id="@+id/spinnerColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView3"
+        android:layout_alignParentTop="true"
+        android:entries="@array/ColorFont" />
+
+    <Spinner
+        android:id="@+id/spinnerAlign"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView5"
+        android:layout_below="@+id/textView5"
+        android:entries="@array/testAlignOption" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/spinnerAlign"
+        android:text="@string/Margin"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/editText2"
+        android:layout_below="@+id/textView8"
+        android:ems="10"
+        android:inputType="number"
+        android:maxLength="2" />
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/editText1"
+        android:layout_toLeftOf="@+id/textView7"
+        android:ems="10"
+        android:inputType="number"
+        android:maxLength="2" />
+
+    <EditText
+        android:id="@+id/editText3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editText1"
+        android:layout_alignLeft="@+id/spinnerBack"
+        android:ems="10"
+        android:inputType="number"
+        android:maxLength="2" />
+
+    <EditText
+        android:id="@+id/editText4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/editText2"
+        android:layout_alignBottom="@+id/editText2"
+        android:layout_alignLeft="@+id/editText3"
+        android:ems="10"
+        android:inputType="number"
+        android:maxLength="2" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editText1"
+        android:layout_alignLeft="@+id/textView10"
+        android:text="T"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editText2"
+        android:layout_alignLeft="@+id/textView7"
         android:text="B"
-        android:textColor="@android:color/black" />
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <Button
-        android:id="@+id/button_Red"
+    <TextView
+        android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button_Black"
-        android:layout_alignBottom="@+id/button_Black"
-        android:layout_toRightOf="@+id/button_Black"
-        android:text="R" />
+        android:layout_above="@+id/editText4"
+        android:layout_toLeftOf="@+id/editText3"
+        android:text="L"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <Button
-        android:id="@+id/button_Blue"
+    <TextView
+        android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button_Red"
-        android:layout_alignBottom="@+id/button_Red"
-        android:layout_centerHorizontal="true"
-        android:text="B" />
+        android:layout_alignBaseline="@+id/textView10"
+        android:layout_alignBottom="@+id/textView10"
+        android:layout_alignRight="@+id/textView11"
+        android:text="R"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <Button
-        android:id="@+id/button_Green"
+    <EditText
+        android:id="@+id/editText_Size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button_Blue"
-        android:layout_alignBottom="@+id/button_Blue"
-        android:layout_toLeftOf="@+id/button_White"
-        android:text="G" />
+        android:layout_alignLeft="@+id/textView3"
+        android:layout_alignRight="@+id/textView3"
+        android:layout_alignTop="@+id/spinnerFontFamily"
+        android:ems="10"
+        android:inputType="number"
+        android:maxLength="3" />
 
-    <Button
-        android:id="@+id/button_White"
+    <TextView
+        android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button_Green"
-        android:layout_alignBottom="@+id/button_Green"
+        android:layout_below="@+id/spinnerBack"
+        android:layout_toRightOf="@+id/textView1"
+        android:text="@string/FontSize"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textView4"
+        android:layout_alignBottom="@+id/textView4"
+        android:layout_toLeftOf="@+id/buttonDefault"
+        android:text="@string/TextAlign"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/buttonDefault"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:text="W" />
+        android:layout_below="@+id/editText4"
+        android:text="@string/DefaultSettings" />
 
 </RelativeLayout>

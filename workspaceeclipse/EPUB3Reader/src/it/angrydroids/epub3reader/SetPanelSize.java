@@ -50,6 +50,7 @@ public class SetPanelSize extends DialogFragment {
 							value = (float) 0.1;
 						if (value >= 0.9)
 							value = (float) 0.9;
+
 						((EpubReaderMain) getActivity()).changeViewsSize(value);
 						SharedPreferences.Editor editor = preferences.edit();
 						sBv = seekbar.getProgress();
