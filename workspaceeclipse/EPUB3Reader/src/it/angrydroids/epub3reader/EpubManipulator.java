@@ -598,22 +598,16 @@ public class EpubManipulator {
 			css = css + "p{\n\tfont-size:" + settings[3] + "%\n}\n";
 
 		if (!settings[4].isEmpty())
-			css = css + "p{line-height:" + settings[4] + "px;}";
+			css = css + "p{line-height:" + settings[4] + "em;}";
 
 		if (!settings[5].isEmpty())
 			css = css + "p{text-align:" + settings[5] + ";}";
 
 		if (!settings[6].isEmpty())
-			css = css + "body{margin-top:" + settings[6] + "px;}";
+			css = css + "body{margin-left:" + settings[6] + "%;}";
 
 		if (!settings[7].isEmpty())
-			css = css + "body{margin-bottom:" + settings[7] + "px;}";
-
-		if (!settings[8].isEmpty())
-			css = css + "body{margin-left:" + settings[8] + "px;}";
-
-		if (!settings[9].isEmpty())
-			css = css + "body{margin-right:" + settings[9] + "px;}";
+			css = css + "body{margin-right:" + settings[7] + "%;}";
 
 		css = css + "</style>";
 

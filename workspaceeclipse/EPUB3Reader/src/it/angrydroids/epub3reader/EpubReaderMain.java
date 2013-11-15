@@ -78,7 +78,7 @@ public class EpubReaderMain extends Activity {
 	protected static String fontSize = "";
 	protected static String lineHeight = ""; // work in progress
 	protected static String textAlign = ""; // work in progress
-	protected static String top, bottom, left, right;
+	protected static String left, right;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -354,7 +354,7 @@ public class EpubReaderMain extends Activity {
 
 			menu.findItem(R.id.Align).setVisible(true);
 
-			menu.findItem(R.id.SyncScroll).setVisible(true);
+			// menu.findItem(R.id.SyncScroll).setVisible(true);
 
 			menu.findItem(R.id.StyleBook1).setVisible(true);
 
@@ -794,7 +794,7 @@ public class EpubReaderMain extends Activity {
 
 	public static String[] getSettings() { // work in progress
 		String[] settings = { color, backColor, fontFamily, fontSize,
-				lineHeight, textAlign, top, bottom, left, right };
+				lineHeight, textAlign, left, right };
 		return settings;
 	}
 
@@ -828,11 +828,11 @@ public class EpubReaderMain extends Activity {
 		textAlign = my_Align;
 	}
 
-	public static void setMargin(String mTop, String mBottom, String mLeft,
-			String mRight) {
-		top = mTop;
-		bottom = mBottom;
+	public static void setMarginLeft(String mLeft) {
 		left = mLeft;
+	}
+
+	public static void setMarginRight(String mRight) {
 		right = mRight;
 	}
 

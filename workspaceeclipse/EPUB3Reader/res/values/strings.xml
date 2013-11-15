@@ -71,7 +71,7 @@
     <string name="tablebodyhtmlClose">&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
     <string name="tocReference">&lt;tr&gt;&lt;td&gt;Table of Contents:&lt;/td&gt;</string>
     <string name="change_Font">Change Font</string>
-    <string name="change_Font_Color">Change Font Color:</string>
+    <string name="change_Font_Color">Font Color:</string>
     <string name="changeStyle">Change Style</string>
     <string name="blue_rgb">#0000ff</string>
     <string name="red_rgb">#ff0000</string>
@@ -91,7 +91,7 @@
         <item >Blue</item>
         <item >White</item>
     </string-array>
-        <string name="ChangeBackgroundColor">Change Background Color:</string>
+        <string name="ChangeBackgroundColor">Background Color:</string>
         <string-array name="ColorBack">
             <item >White</item>
             <item >Red</item>
@@ -100,22 +100,23 @@
             <item >Black</item>
         </string-array>
             <string name="syncScroll">Sync. Scroll</string>
-            <string name="ChangeFont">Change Font:</string>
+            <string name="ChangeFont">Font:</string>
             <string-array name="FontStyle">
-                <item >Arial</item>
-                <item >Times New Roman</item>
-                <item >Courier New</item>
+                <item >Sans Serif</item>
+                <item >Serif</item>
+                <item >Monospace</item>
             </string-array>
-            <string name="Arial">Arial</string>
+            <string name="Arial">Sans Serif</string>
             <string name="Serif">Serif</string>
             <string name="Monospace">Monospace</string>
             <string name="FontSize">Font Size:</string>
             <string name="LineHeight">Line Height:</string>
-            <string name="TextAlign">Text Align:</string>
+            <string name="TextAlign">Alignment:</string>
             <string-array name="testAlignOption">
                 <item >Left</item>
                 <item >Center</item>
                 <item >Right</item>
+                <item >Justify</item>
             </string-array>
             <string name="Left_Align">Left</string>
             <string name="Center_Align">Center</string>
@@ -124,4 +125,29 @@
             <string name="px">px</string>
             <string name="open">Open...</string>
             <string name="Margin">Margin(px):</string>
+            <string-array name="FontSize">
+                <item >100%</item>
+                <item >125%</item>
+                <item >150%</item>
+                <item >175%</item>
+                <item >200%</item>
+                <item >90%</item>
+            </string-array>
+            <string-array name="LineHeight">
+                <item >1em</item>
+                <item >1.25em</item>
+                <item >1.5em</item>
+                <item >1.75em</item>
+                <item >2em</item>
+                <item >0.9em</item>
+            </string-array>
+            <string name="Justify">Justify</string>
+            <string-array name="Margin">
+                <item >0</item>
+                <item >5</item>
+                <item >10</item>
+                <item >15</item>
+                <item >20</item>
+                <item >25</item>
+            </string-array>
 </resources>
