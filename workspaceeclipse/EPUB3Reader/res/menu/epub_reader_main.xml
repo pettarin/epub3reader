@@ -1,6 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/FirstEPUB" android:title="@string/Open_Book_1"></item>
-    <item android:id="@+id/SecondEPUB" android:title="@string/Open_Book_2"></item>
+        <item android:id="@+id/Open" android:title="@string/open">
+            <menu>
+                <item android:id="@+id/FirstEPUB" android:title="@string/Open_Book_1"/>
+                <item android:id="@+id/SecondEPUB" android:title="@string/Open_Book_2"/>
+            </menu>
+    </item>
     <item android:id="@+id/Front" android:title="@string/Enable_Parallel_Texts">
         <menu>
             <item android:id="@+id/FirstFront" android:title="@string/From_Book_1" android:visible="false"/>
@@ -11,6 +15,7 @@
     <item android:id="@+id/Synchronize" android:title="@string/Toggle_Sync_Views" android:visible="false"></item>
     <item android:id="@+id/Align" android:title="@string/Reset_Sync_Views" android:visible="false">
         <menu>
+            
             <item android:id="@+id/PconS" android:title="@string/Sync_Book_1_with_Book_2"/>
             <item android:id="@+id/SconP" android:title="@string/Sync_Book_2_with_Book_1"/>
         </menu>
@@ -30,7 +35,13 @@
     </item>
     <item android:id="@+id/changeSize" android:title="@string/Change_Size" android:visible="true" android:checkable="false">
     </item>
-    <item android:id="@+id/Style" android:title="@string/changeStyle" android:visible="false">
+    <item android:id="@+id/Style" android:title="@string/changeStyle" android:visible="true">
+        <menu>
+            <item android:id="@+id/StyleBook1" android:title="@string/Book_1" android:visible="false"/>
+            <item android:id="@+id/StyleBook2" android:title="@string/Book_2" android:visible="false"/>
+        </menu>
     </item>
+    <item android:id="@+id/SyncScroll" android:title="@string/syncScroll" android:visible="false"></item>
+
 
 </menu>

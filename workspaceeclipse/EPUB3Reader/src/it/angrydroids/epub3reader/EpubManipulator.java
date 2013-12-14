@@ -71,6 +71,7 @@ public class EpubManipulator {
 
 	private String fileName;
 	FileInputStream fs;
+	private String actualCSS = "";
 
 	// book from fileName
 	public EpubManipulator(String fileName, String destFolder,
@@ -361,8 +362,6 @@ public class EpubManipulator {
 
 		this.currentPage = spineElement;
 
-		// addCSS(spineElement, EpubReaderMain.getColor()); work in progress
-
 		return spineElement;
 	}
 
@@ -459,11 +458,27 @@ public class EpubManipulator {
 		return html;
 	}
 
+	public String r_createTocFile(TOCReference e) {
+
+		String childrenPath = "file://" + location + decompressedFolder + "/"
+				+ pathOPF + "/" + e.getCompleteHref();
+
+		String html = "<ul><li>" + "<a href=\"" + childrenPath + "\">"
+				+ e.getTitle() + "</a>" + "</li></ul>";
+
+		List<TOCReference> children = e.getChildren();
+
+		for (int j = 0; j < children.size(); j++)
+			html += r_createTocFile(children.get(j));
+
+		return html;
+	}
+
 	// Create an html file, which contain the TOC, in the EPUB folder
 	public void createTocFile() {
 		List<TOCReference> tmp;
 		TableOfContents toc = book.getTableOfContents();
-		String html = getS(R.string.htmlBodyTableOpen);
+		String html = "<html><body><ul>";
 
 		tmp = toc.getTocReferences();
 
@@ -473,21 +488,15 @@ public class EpubManipulator {
 				String path = "file://" + location + decompressedFolder + "/"
 						+ pathOPF + "/" + tmp.get(i).getCompleteHref();
 
-				html += "<tr><td></td><td>" + "<a href=\"" + path + "\">"
-						+ tmp.get(i).getTitle() + "</a>" + "</td></tr>";
+				html += "<li>" + "<a href=\"" + path + "\">"
+						+ tmp.get(i).getTitle() + "</a>" + "</li>";
 
 				// pre-order traversal?
 				List<TOCReference> children = tmp.get(i).getChildren();
 
-				for (int j = 0; j < children.size(); j++) {
-					String childrenPath = "file://" + location
-							+ decompressedFolder + "/" + pathOPF + "/"
-							+ children.get(j).getCompleteHref();
+				for (int j = 0; j < children.size(); j++)
+					html += r_createTocFile(children.get(j));
 
-					html += "<tr><td></td><td>" + "<a href=\"" + childrenPath
-							+ "\">" + children.get(j).getTitle() + "</a>"
-							+ "</td></tr>";
-				}
 			}
 		}
 
@@ -570,37 +579,57 @@ public class EpubManipulator {
 	}
 
 	// TODO work in progress
-	public void addCSS(String path, String color) { // metodo per modificare
+	public void addCSS(String[] settings) {
 		// CSS
-		path = path.replace("file:///", "");
-		String source = readPage(path);
+		String css = "<style type=\"text/css\">\n";
 
-		source = source.replace("<style type=\"text/css\">*</style></head>",
-				"</head>");
+		if (!settings[0].isEmpty()) {
+			css = css + "body{color:" + settings[0] + ";}";
+			css = css + "a:link{color:" + settings[0] + ";}";
+		}
 
-		String css = "<style type=\"text/css\">\n"; // denota carattere
-													// speciale \
-		// Test: ridimensionamento font
-		css = css + "p{\n\tfont-size: 120%\n}\n";
+		if (!settings[1].isEmpty())
+			css = css + "body {background-color:" + settings[1] + ";}";
 
-		css = css + "body{color:" + color + ";}";
+		if (!settings[2].isEmpty())
+			css = css + "p{font-family:" + settings[2] + ";}";
 
-		// Tag di chiusura
+		if (!settings[3].isEmpty())
+			css = css + "p{\n\tfont-size:" + settings[3] + "%\n}\n";
+
+		if (!settings[4].isEmpty())
+			css = css + "p{line-height:" + settings[4] + "em;}";
+
+		if (!settings[5].isEmpty())
+			css = css + "p{text-align:" + settings[5] + ";}";
+
+		if (!settings[6].isEmpty())
+			css = css + "body{margin-left:" + settings[6] + "%;}";
+
+		if (!settings[7].isEmpty())
+			css = css + "body{margin-right:" + settings[7] + "%;}";
+
 		css = css + "</style>";
 
-		source = source.replace("</head>", css + "</head>");
+		for (int i = 0; i < spineElementPaths.length; i++) {
+			String path = spineElementPaths[i].replace("file:///", "");
+			String source = readPage(path);
 
-		writePage(path, source);
+			source = source.replace(actualCSS + "</head>", css + "</head>");
+
+			writePage(path, source);
+		}
+		actualCSS = css;
+
 	}
 
-	// TODO don't work properly
-	public boolean deleteCSS(String path) {
-		path = path.replace("file:///", "");
-		String source = readPage(path);
-		source = source.replace("<style type=\"text/css\">.</style></head>",
-				"</head>");
-		return writePage(path, source);
-	}
+	/*
+	 * TODO don't work properly, forse non necessario public boolean
+	 * deleteCSS(String path) { path = path.replace("file:///", ""); String
+	 * source = readPage(path); source =
+	 * source.replace("<style type=\"text/css\">.</style></head>", "</head>");
+	 * return writePage(path, source); }
+	 */
 
 	// TODO work in progress
 	private String readPage(String path) {

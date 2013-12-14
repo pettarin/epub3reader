@@ -31,6 +31,7 @@ public class SetPanelSize extends DialogFragment {
 
 		final SharedPreferences preferences = ((EpubReaderMain) getActivity())
 				.getPreferences(Context.MODE_PRIVATE);
+
 		sBv = preferences.getInt("seekBarValue", 50);
 		seekbar = (SeekBar) view.findViewById(R.id.seekBar1);
 		seekbar.setProgress(sBv);
@@ -46,10 +47,11 @@ public class SetPanelSize extends DialogFragment {
 					public void onClick(DialogInterface dialog, int id) {
 						float actual = (float) seekbar.getProgress();
 						value = actual / (float) seekbar.getMax();
-						if (value <= 0.0)
+						if (value <= 0.1)
 							value = (float) 0.1;
 						if (value >= 0.9)
 							value = (float) 0.9;
+
 						((EpubReaderMain) getActivity()).changeViewsSize(value);
 						SharedPreferences.Editor editor = preferences.edit();
 						sBv = seekbar.getProgress();
