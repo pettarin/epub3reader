@@ -20,6 +20,7 @@ public final class R {
     
          */
         public static final int activity_horizontal_margin=0x7f040005;
+        public static final int activity_vertical_margin=0x7f040006;
         public static final int all_margin=0x7f040002;
         public static final int close_button_dimen=0x7f040003;
         public static final int horizontal_button_height=0x7f040000;
@@ -30,54 +31,63 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int Align=0x7f09001a;
-        public static final int FirstEPUB=0x7f090014;
-        public static final int FirstFront=0x7f090017;
-        public static final int Front=0x7f090016;
-        public static final int Metadata=0x7f09001d;
-        public static final int PconS=0x7f09001b;
-        public static final int RelativeLayout1=0x7f09000b;
-        public static final int SconP=0x7f09001c;
-        public static final int SecondEPUB=0x7f090015;
-        public static final int SecondFront=0x7f090018;
-        public static final int Style=0x7f090024;
-        public static final int Synchronize=0x7f090019;
-        public static final int bottomFirstView=0x7f090005;
-        public static final int bottomSecondView=0x7f090008;
-        public static final int button_Black=0x7f09000d;
-        public static final int button_Blue=0x7f09000f;
-        public static final int button_Green=0x7f090010;
-        public static final int button_Red=0x7f09000e;
-        public static final int button_White=0x7f090011;
-        public static final int changeFontTextView=0x7f09000c;
-        public static final int changeSize=0x7f090023;
-        public static final int fileListView=0x7f090012;
-        public static final int firstViewport=0x7f090002;
-        public static final int firstViewportLayout=0x7f090001;
-        public static final int mainLayout=0x7f090000;
-        public static final int meta1=0x7f09001e;
-        public static final int meta2=0x7f09001f;
-        public static final int secondViewport=0x7f090007;
-        public static final int secondViewportLayout=0x7f090006;
-        public static final int seekBar1=0x7f090013;
-        public static final int tableOfContents=0x7f090020;
-        public static final int toc1=0x7f090021;
-        public static final int toc2=0x7f090022;
-        public static final int topFirstView=0x7f090003;
-        public static final int topRightFirstView=0x7f090004;
-        public static final int topRightSecondView=0x7f09000a;
-        public static final int topSecondView=0x7f090009;
-        public static final int update=0x7f090025;
+        public static final int Align=0x7f09001f;
+        public static final int CloseButton=0x7f090002;
+        public static final int FirstEPUB=0x7f090019;
+        public static final int FirstFront=0x7f09001c;
+        public static final int Front=0x7f09001b;
+        public static final int MainLayout=0x7f09000e;
+        public static final int Metadata=0x7f090022;
+        public static final int PconS=0x7f090020;
+        public static final int RelativeLayout1=0x7f09000f;
+        public static final int SconP=0x7f090021;
+        public static final int SecondEPUB=0x7f09001a;
+        public static final int SecondFront=0x7f09001d;
+        public static final int Style=0x7f090029;
+        public static final int Synchronize=0x7f09001e;
+        public static final int Viewport=0x7f090001;
+        public static final int ViewportLayout=0x7f090000;
+        public static final int action_settings=0x7f090018;
+        public static final int bottomFirstView=0x7f090008;
+        public static final int bottomSecondView=0x7f09000b;
+        public static final int button_Black=0x7f090011;
+        public static final int button_Blue=0x7f090013;
+        public static final int button_Green=0x7f090014;
+        public static final int button_Red=0x7f090012;
+        public static final int button_White=0x7f090015;
+        public static final int changeFontTextView=0x7f090010;
+        public static final int changeSize=0x7f090028;
+        public static final int fileListView=0x7f090016;
+        public static final int firstViewport=0x7f090005;
+        public static final int firstViewportLayout=0x7f090004;
+        public static final int mainLayout=0x7f090003;
+        public static final int meta1=0x7f090023;
+        public static final int meta2=0x7f090024;
+        public static final int secondViewport=0x7f09000a;
+        public static final int secondViewportLayout=0x7f090009;
+        public static final int seekBar1=0x7f090017;
+        public static final int tableOfContents=0x7f090025;
+        public static final int toc1=0x7f090026;
+        public static final int toc2=0x7f090027;
+        public static final int topFirstView=0x7f090006;
+        public static final int topRightFirstView=0x7f090007;
+        public static final int topRightSecondView=0x7f09000d;
+        public static final int topSecondView=0x7f09000c;
+        public static final int update=0x7f09002a;
     }
     public static final class layout {
-        public static final int activity_epub_reader_main=0x7f030000;
-        public static final int change_css=0x7f030001;
-        public static final int file_chooser_layout=0x7f030002;
-        public static final int set_panel_size=0x7f030003;
+        public static final int activity_book_view=0x7f030000;
+        public static final int activity_epub_reader_main=0x7f030001;
+        public static final int activity_split_panel=0x7f030002;
+        public static final int change_css=0x7f030003;
+        public static final int file_chooser_layout=0x7f030004;
+        public static final int set_panel_size=0x7f030005;
     }
     public static final class menu {
-        public static final int epub_reader_main=0x7f080000;
-        public static final int file_chooser=0x7f080001;
+        public static final int book_view=0x7f080000;
+        public static final int epub_reader_main=0x7f080001;
+        public static final int file_chooser=0x7f080002;
+        public static final int split_panel=0x7f080003;
     }
     public static final class string {
         public static final int Book1_Stream=0x7f05002e;
@@ -105,6 +115,7 @@ public final class R {
         public static final int Sync_Book_2_with_Book_1=0x7f05000b;
         public static final int Table_of_Contents=0x7f05000f;
         public static final int Toggle_Sync_Views=0x7f050004;
+        public static final int action_settings=0x7f050053;
         public static final int app_name=0x7f050000;
         public static final int authorsMeta=0x7f05003b;
         public static final int black_rgb=0x7f05004a;
@@ -133,6 +144,7 @@ public final class R {
         public static final int firstViewSize=0x7f050023;
         public static final int full_path=0x7f050037;
         public static final int green_rgb=0x7f050049;
+        public static final int hello_world=0x7f050054;
         public static final int htmlBodyTableOpen=0x7f050039;
         public static final int invisible=0x7f05001a;
         public static final int lang=0x7f05001f;
@@ -155,6 +167,8 @@ public final class R {
         public static final int tablebodyhtmlClose=0x7f050042;
         public static final int textOrHTML=0x7f050026;
         public static final int time=0x7f05001c;
+        public static final int title_activity_book_view=0x7f050055;
+        public static final int title_activity_split_panel=0x7f050052;
         public static final int titlesMeta=0x7f05003a;
         public static final int tocReference=0x7f050043;
         public static final int tome=0x7f05001e;

@@ -2,7 +2,9 @@
 <resources>
 
     <string name="app_name">EPUB3 Reader</string>
+
     <color name="dark_grey">#696969</color>
+
     <string name="Open_Book_1">Open Book 1</string>
     <string name="Open_Book_2">Open Book 2</string>
     <string name="Enable_Parallel_Texts">Enable Parallel Texts</string>
@@ -84,4 +86,9 @@
     <string name="SetSizeTitle">First Panel Size:</string>
     <string name="LanguageChooserTitle">Choose two languages:</string>
     <string name="parallelTextBool">parallelTextBool</string>
+    <string name="title_activity_split_panel">SplitPanel</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_book_view">BookView</string>
+
 </resources>

@@ -26,14 +26,138 @@ package it.angrydroids.epub3reader;
 
 import java.io.IOException;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
-import android.webkit.WebViewClient;
 
-public class EpubNavigator extends WebViewClient {
+public class EpubNavigator {
 
+	//----- NEW NAVIGATOR
+	
+	// Fields
+	private int nBooks;					// maximum number of books in the same time
+	private EpubManipulator[] books;	// array of opened books
+	private Fragment[] views;
+	private String[] viewedPages;
+	private SplitPanel activity;
+	private static Context context;
+	
+	public EpubNavigator(int numberOfBooks, SplitPanel a) {
+		nBooks = numberOfBooks;
+		books = new EpubManipulator[nBooks];
+		views = new Fragment[nBooks];
+		viewedPages = new String[nBooks];
+		activity = a;
+		context = a.getBaseContext();
+	}
+	
+	public boolean openBook(String path, int index)
+	{
+		try {
+			if(books[index] != null)
+				books[index].destroy();
+
+			books[index] = new EpubManipulator(path, index+"", context);
+			
+			if(views[index]==null)							// if the fragment doesn't exists
+				views[index] = activity.addBookView(index);	// create it
+			else											// or
+				activity.attachFragment(views[index]);		// re-attach it in the main activity
+			
+			((BookView)views[index]).index = index;
+			viewedPages[index] = books[index].getSpineElementPath(0);
+			setView(books[index].getSpineElementPath(0), index);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public void setView(String page, int index) {
+
+		viewedPages[index] = page;
+		if ((books[index] != null) && (books[index].goToPage(page))) {
+			// book mode
+			((BookView)views[index]).state = ViewStateEnum.books;
+		} else {
+			// note or external link mode
+			((BookView)views[index]).state = ViewStateEnum.notes;
+		}
+		
+		loadPageIntoView(page, index);
+	}
+	
+	// re-load every page on its own view 
+	public void loadPages()
+	{
+		for(int i = 0; i < views.length; i++)
+			if(views[i]!=null)
+				((BookView) views[i]).view.loadUrl(viewedPages[i]);
+		
+	}
+	
+	public void loadPageIntoView(String pathOfPage, int index) {
+		ViewStateEnum state;
+		
+		if ((books[index] != null)
+				&& ((pathOfPage.equals(books[index].getCurrentPageURL())) || (books[index]
+						.getPageIndex(pathOfPage) >= 0)))
+			state = ViewStateEnum.books;
+		else
+			state = ViewStateEnum.notes;
+		
+		
+		if(views[index]==null)
+			views[index] = activity.addBookView(index);
+		else
+		{
+			activity.attachFragment(views[index]);
+			((BookView) views[index]).view.loadUrl(pathOfPage);
+		}
+	
+		((BookView) views[index]).state = state;
+	}
+	
+	// if synchronized reading is active, change chapter in each books
+	public void goToNextChapter(int book) throws Exception {
+		setView(books[book].goToNextChapter(),book);
+		
+		if (synchronizedReadingActive)
+			for(int i = 1; i < nBooks; i++)
+				if(books[(book+i)%nBooks]!= null)
+					setView(books[(book+i)%nBooks].goToNextChapter(),(book+i)%nBooks);
+	}
+
+	// if synchronized reading is active, change chapter in each books
+	public void goToPrevChapter(int book) throws Exception {
+		setView(books[book].goToPreviousChapter(),book);
+		
+		if (synchronizedReadingActive)
+			for(int i = 1; i < nBooks; i++)
+				if(books[(book+i)%nBooks]!= null)
+					setView(books[(book+i)%nBooks].goToPreviousChapter(),(book+i)%nBooks);
+	}
+	
+	public boolean atLeastOneBookOpen()
+	{
+		if(books[0]!=null)
+			return true;
+		return false;
+	}
+	
+	public boolean exactlyOneBookOpen()
+	{
+		for(int i = 1; i < books.length;i++)
+			if(books[i]!=null)
+				return false;
+		if(books[0]!=null)
+			return true;
+		return false;
+	}
+	//----- END NEW NAVIGATOR
+	
 	// TODO: generalize
 	private EpubManipulator book1;
 	private EpubManipulator book2;
@@ -45,7 +169,6 @@ public class EpubNavigator extends WebViewClient {
 	private boolean parallelText = false;
 	private String pageOnView1;
 	private String pageOnView2;
-	private static Context context;
 
 	public EpubNavigator(Context theContext) {
 		atLeastOneBookOpen = false;
