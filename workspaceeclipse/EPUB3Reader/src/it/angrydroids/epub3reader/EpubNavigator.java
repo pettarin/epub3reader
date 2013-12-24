@@ -157,7 +157,7 @@ public class EpubNavigator {
 		return false;
 	}
 	//----- END NEW NAVIGATOR
-	
+
 	// TODO: generalize
 	private EpubManipulator book1;
 	private EpubManipulator book2;
@@ -169,6 +169,7 @@ public class EpubNavigator {
 	private boolean parallelText = false;
 	private String pageOnView1;
 	private String pageOnView2;
+	//private static Context context;
 
 	public EpubNavigator(Context theContext) {
 		atLeastOneBookOpen = false;
@@ -575,6 +576,17 @@ public class EpubNavigator {
 				displayTOC(BookEnum.second);
 		}
 		return ok;
+	}
+
+	public void changeCSS(BookEnum which) {
+		if (which == BookEnum.first) {
+			book1.addCSS(EpubReaderMain.getSettings());
+			loadPageIntoView1(pageOnView1);
+		}
+		if (!exactlyOneBookOpen && which == BookEnum.second) {
+			book2.addCSS(EpubReaderMain.getSettings());
+			loadPageIntoView2(pageOnView2);
+		}
 	}
 
 	public boolean isExactlyOneBookOpen() {

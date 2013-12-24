@@ -36,6 +36,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.MotionEventCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -70,8 +71,14 @@ public class EpubReaderMain extends Activity {
 	protected BookEnum bookSelector;
 	protected float swipeOriginX, swipeOriginY;
 	protected static float firstViewSize = (float) 0.5;
-	protected boolean syncScrollActivated = true;
-	protected static String color = "#000000"; // work in progress
+	protected boolean syncScrollActivated = false;
+	protected static String color = ""; // work in progress
+	protected static String backColor = ""; // work in progress
+	protected static String fontFamily = "";
+	protected static String fontSize = "";
+	protected static String lineHeight = ""; // work in progress
+	protected static String textAlign = ""; // work in progress
+	protected static String left, right;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +125,8 @@ public class EpubReaderMain extends Activity {
 
 				if (syncScrollActivated == true
 						&& stateView2 != ViewStateEnum.invisible) {
-					// syncScroll(v, view2, event); work in progress
+					syncScroll(v, view2, event); // work in
+													// progress
 				}
 
 				WebView view = (WebView) v;
@@ -132,6 +140,12 @@ public class EpubReaderMain extends Activity {
 				if (stateView2 == ViewStateEnum.books) {
 					swipePage(v, event, BookEnum.second);
 				}
+
+				if (syncScrollActivated == true) {
+					syncScroll(v, view1, event); // work in
+													// progress
+				}
+
 				WebView view = (WebView) v;
 				return view.onTouchEvent(event);
 			}
@@ -339,6 +353,12 @@ public class EpubReaderMain extends Activity {
 			menu.findItem(R.id.Synchronize).setVisible(true);
 
 			menu.findItem(R.id.Align).setVisible(true);
+
+			// menu.findItem(R.id.SyncScroll).setVisible(true);
+
+			menu.findItem(R.id.StyleBook1).setVisible(true);
+
+			menu.findItem(R.id.StyleBook2).setVisible(true);
 		}
 
 		if (navigator.isExactlyOneBookOpen() == true
@@ -362,6 +382,11 @@ public class EpubReaderMain extends Activity {
 
 			menu.findItem(R.id.Align).setVisible(false);
 
+			menu.findItem(R.id.SyncScroll).setVisible(false);
+
+			menu.findItem(R.id.StyleBook1).setVisible(false);
+
+			menu.findItem(R.id.StyleBook2).setVisible(false);
 		}
 
 		// if there is only one view, option "changeSizes" is not visualized
@@ -495,11 +520,42 @@ public class EpubReaderMain extends Activity {
 			return true;
 		case R.id.Style: // work in progress...
 			try {
-				DialogFragment newFragment = new ChangeCSSMenu();
-				newFragment.show(getFragmentManager(), "");
+				if (navigator.isExactlyOneBookOpen() == true) {
+					DialogFragment newFragment = new ChangeCSSMenu();
+					newFragment.show(getFragmentManager(), "");
+					bookSelector = BookEnum.first;
+				}
 			} catch (Exception e) {
 				errorMessage(getString(R.string.error_CannotChangeStyle));
 			}
+			return true;
+
+		case R.id.StyleBook1:
+			try {
+				{
+					DialogFragment newFragment = new ChangeCSSMenu();
+					newFragment.show(getFragmentManager(), "");
+					bookSelector = BookEnum.first;
+				}
+			} catch (Exception e) {
+				errorMessage(getString(R.string.error_CannotChangeStyle));
+			}
+			return true;
+
+		case R.id.StyleBook2:
+			try {
+				{
+					DialogFragment newFragment = new ChangeCSSMenu();
+					newFragment.show(getFragmentManager(), "");
+					bookSelector = BookEnum.second;
+				}
+			} catch (Exception e) {
+				errorMessage(getString(R.string.error_CannotChangeStyle));
+			}
+			return true;
+
+		case R.id.SyncScroll:
+			syncScrollActivated = !syncScrollActivated;
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -541,23 +597,94 @@ public class EpubReaderMain extends Activity {
 
 	}
 
-	// TODO work in progress, navigator?
-	/*
-	 * protected void syncScroll(View v1, View v2, MotionEvent event) { int
-	 * action = MotionEventCompat.getActionMasked(event);
-	 * 
-	 * switch (action) { case (MotionEvent.ACTION_DOWN): swipeOriginY =
-	 * event.getY(); swipeOriginX = event.getX(); break;
-	 * 
-	 * case (MotionEvent.ACTION_UP): float endY = event.getY(); float endX =
-	 * event.getX(); float diffY = swipeOriginY - endY; float diffX =
-	 * swipeOriginX - endX; if (Math.abs(diffY) < Math.abs(diffX) ||
-	 * Math.abs(diffY) > 300) // solo // per // piccoli // scroll { }
-	 * 
-	 * else { v2.scrollBy(0, (int) diffY); }
-	 * 
-	 * break; } }
-	 */
+	// Manca un controllo di fine/inizio pagina + problema della forza
+	protected void syncScroll(View v1, View v2, MotionEvent event) {
+		int action = MotionEventCompat.getActionMasked(event);
+		final WebView wv1 = (WebView) v1;
+		final WebView wv2 = (WebView) v2;
+		final float DiffContent = ((float) wv2.getContentHeight() / (float) wv1
+				.getContentHeight());
+		final int wv1Height = wv1.getContentHeight();
+		final int wv2Height = wv2.getContentHeight();
+
+		switch (action) {
+		case (MotionEvent.ACTION_DOWN):
+			swipeOriginY = event.getY();
+			swipeOriginX = event.getX();
+			Thread t = new Thread();
+
+			new Thread(new Runnable() {
+				public void run() {
+					try {
+						// int oldY = wv1.getProgress();
+						// int newY = oldY;
+						// do {
+						// Log.v("oldY1", oldY + "");
+						// Log.v("newY1", newY + "");
+						// oldY = newY;
+
+						while (wv1.isPressed()) {
+							Thread.sleep(18);
+							wv2.scrollTo(0, (int) ((float) wv1.getScrollY()
+									/ (float) wv1Height * (float) wv2Height));
+							Log.e("asd1", "" + wv1.getScrollY());
+							Log.e("asd2", "" + wv1.getHeight());
+							Log.e("asd3", "" + wv1.getContentHeight());
+
+							/*
+							 * if (wv2.getScrollY() + wv2.getHeight() > wv2
+							 * .getContentHeight()) wv2.scrollTo( 0,
+							 * wv2.getContentHeight() - wv2.getHeight());
+							 */}
+
+						for (int i = 0; i < 2500 / 30; i++) {
+							Thread.sleep(30);
+							wv2.scrollTo(0, (int) ((float) wv1.getScrollY()
+									/ (float) wv1Height * (float) wv2Height));// wv1.getScrollY());//
+																				// (int)
+																				// ((float)
+																				// wv1.getProgress()
+							// * (float) wv2.getContentHeight() / 100.0));
+							/*
+							 * if (wv2.getScrollY() + wv2.getHeight() > wv2
+							 * .getContentHeight()) wv2.scrollTo( 0,
+							 * wv2.getContentHeight() - wv2.getHeight());
+							 */
+
+						}
+						// newY = wv1.getProgress();
+						// Log.v("oldY2", oldY + "");
+						// Log.v("newY2", newY + "");
+						// } while (oldY != newY);
+
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+			}).start();
+			break;
+
+		case (MotionEvent.ACTION_MOVE):
+			float endY = event.getY();
+			float diffY = swipeOriginY - endY;
+			swipeOriginY = endY;
+			if (v1.getScrollY() > 0)
+				v2.scrollBy(0, (int) (diffY * DiffContent));
+
+			Log.v("Scroll Y", v1.getScrollY() + "");
+
+			Log.v("SCROLLY_B", v1.getScrollY() + v1.getHeight() + "");
+
+			Log.v("CONTENTHEIGHT", wv1.getContentHeight() + "");
+			break;
+
+		case (MotionEvent.ACTION_UP):
+			v2.scrollTo(0, v1.getScrollY());
+			break;
+		}
+	}
 
 	// Language Selection
 	public void chooseLanguage(BookEnum which) {
@@ -665,12 +792,48 @@ public class EpubReaderMain extends Activity {
 		return view2;
 	}
 
-	public static String getColor() { // work in progress
-		return color;
+	public static String[] getSettings() { // work in progress
+		String[] settings = { color, backColor, fontFamily, fontSize,
+				lineHeight, textAlign, left, right };
+		return settings;
+	}
+
+	public static void setBackColor(String my_backColor) { // work in progress
+		backColor = my_backColor;
 	}
 
 	public static void setColor(String my_color) { // work in progress
 		color = my_color;
+	}
+
+	public static void setFontType(String my_fontFamily) {
+		fontFamily = my_fontFamily;
+	}
+
+	public static void setFontSize(String my_fontSize) {
+		fontSize = my_fontSize;
+	}
+
+	public void setCSS() {
+
+		navigator.changeCSS(bookSelector);
+	}
+
+	public static void setLineHeight(String my_lineHeight) {
+		if (my_lineHeight != null)
+			lineHeight = my_lineHeight;
+	}
+
+	public static void setAlign(String my_Align) {
+		textAlign = my_Align;
+	}
+
+	public static void setMarginLeft(String mLeft) {
+		left = mLeft;
+	}
+
+	public static void setMarginRight(String mRight) {
+		right = mRight;
 	}
 
 	public static float getFirstViewWeight() {
