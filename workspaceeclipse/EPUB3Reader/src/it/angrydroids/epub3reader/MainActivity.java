@@ -282,7 +282,7 @@ public class MainActivity extends Activity {
 	//----
 	
 	//---- Panels Manager
-	public void addPanel(SplitPanel p, String tag)
+	public void addPanel(SplitPanel p)
 	{
 		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 		fragmentTransaction.add(R.id.MainLayout, p, p.getTag());

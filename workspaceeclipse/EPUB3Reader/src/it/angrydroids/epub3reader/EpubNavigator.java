@@ -295,7 +295,7 @@ public class EpubNavigator {
 			activity.removePanelWithoutClosing(p);
 		
 		views[index] = p;
-		activity.addPanel(p, index+"");
+		activity.addPanel(p);
 		p.setKey(index);
 		
 		for(int i = index+1; i < views.length; i++)
@@ -389,8 +389,7 @@ public class EpubNavigator {
 					}	
 				}
 			}
-			else 
-				books[i]=null;
+			else books[i]=null;
 		}
 		
 		return ok;
@@ -402,7 +401,7 @@ public class EpubNavigator {
 			views[i] = newPanelByClassName(preferences.getString(getS(R.string.ViewType)+i, ""));
 			if(views[i]!=null)
 			{
-				activity.addPanel(views[i], i+"");
+				activity.addPanel(views[i]);
 				views[i].setKey(i);
 				views[i].loadState(preferences);
 			}
