@@ -1,0 +1,5 @@
+INDEX VERSION 1.126+C:\Users\Marco\Documents\GitHub\epub3reader\workspaceeclipse\.metadata\.plugins\org.eclipse.jdt.core
+3959992776.index
+1105091849.index
+3622429702.index
+1925162442.index

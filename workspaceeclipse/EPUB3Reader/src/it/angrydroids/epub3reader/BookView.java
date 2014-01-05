@@ -1,74 +1,80 @@
 package it.angrydroids.epub3reader;
 
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.app.Activity;
-import android.app.Fragment;
-import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.MotionEventCompat;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
-import android.widget.Toast;
 
-public class BookView extends Fragment {
-
-	public WebView view;
-	protected Button btnCloseView;
-	public ViewStateEnum state;
+// Panel specialized in visualizing EPUB pages
+public class BookView extends SplitPanel {
+	public ViewStateEnum state = ViewStateEnum.books;
+	protected String viewedPage;
+	protected WebView view;
 	protected float swipeOriginX, swipeOriginY;
-	protected int screenWidth;
-	protected int screenHeight;
-	protected EpubNavigator navigator;
-	public int index;
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)
-	{
-		navigator = ((SplitPanel) getActivity()).navigator;
-		View v = inflater.inflate(R.layout.activity_book_view, container, false);				
+	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)	{
+		super.onCreateView(inflater, container, savedInstanceState);
+		View v = inflater.inflate(R.layout.activity_book_view, container, false);
 		return v;
 	}
-
+	
 	@Override
     public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
-		state = ViewStateEnum.books;
 		view = (WebView) getView().findViewById(R.id.Viewport);
-		btnCloseView = (Button) getView().findViewById(R.id.CloseButton);
-		
-		// ----- get fragment screen size
-		DisplayMetrics metrics = this.getResources().getDisplayMetrics();
-		screenWidth = metrics.widthPixels;
-		screenHeight = metrics.heightPixels;
-		// -----
 		
 		// enable JavaScript for cool things to happen!
 		view.getSettings().setJavaScriptEnabled(true);
-
+		
 		// ----- SWIPE PAGE
 		view.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 	
-				if (state == ViewStateEnum.books) {
-					swipePage(v, event, index);
-				}
+				if (state == ViewStateEnum.books)
+					swipePage(v, event, 0);
+								
 				WebView view = (WebView) v;
 				return view.onTouchEvent(event);
+			}
+		});
+
+		// ----- NOTE & LINK
+		view.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+					Message msg = new Message();
+					msg.setTarget(new Handler() {
+						@Override
+						public void handleMessage(Message msg) {
+							super.handleMessage(msg);
+							String url = msg.getData().getString(
+									getString(R.string.url));
+							if (url != null)
+								navigator.setNote(url, index);
+						}
+					});
+					view.requestFocusNodeHref(msg);
+				
+				return false;
 			}
 		});
 		
 		view.setWebViewClient(new WebViewClient() {
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				try {
-					navigator.setView(url, index);
+					navigator.setBookPage(url, index);
 				} catch (Exception e) {
 					errorMessage(getString(R.string.error_LoadPage));
 				}
@@ -76,7 +82,14 @@ public class BookView extends Fragment {
 			}
 		});
 		
-		navigator.loadPages();
+		loadPage(viewedPage);
+	}
+	
+	public void loadPage(String path)
+	{
+		viewedPage = path;
+		if(created)
+			view.loadUrl(path);
 	}
 	
 	// Change page
@@ -98,13 +111,13 @@ public class BookView extends Fragment {
 
 			if ((diffX > quarterWidth) && (absDiffX > absDiffY)) {
 				try {
-					navigator.goToNextChapter(book);
+					navigator.goToNextChapter(index);
 				} catch (Exception e) {
 					errorMessage(getString(R.string.error_cannotTurnPage));
 				}
 			} else if ((diffX < -quarterWidth) && (absDiffX > absDiffY)) {
 				try {
-					navigator.goToPrevChapter(book);
+					navigator.goToPrevChapter(index);
 				} catch (Exception e) {
 					errorMessage(getString(R.string.error_cannotTurnPage));
 				}
@@ -114,9 +127,19 @@ public class BookView extends Fragment {
 
 	}
 	
-	public void errorMessage(String message) {
-		Context context = this.getActivity().getApplicationContext();
-		Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
-		toast.show();
+	@Override
+	public void saveState(Editor editor) {
+		super.saveState(editor);
+		editor.putString("state"+index, state.name());
+		editor.putString("page"+index, viewedPage);
 	}
+	
+	@Override
+	public void loadState(SharedPreferences preferences)
+	{
+		super.loadState(preferences);
+		loadPage(preferences.getString("page"+index, ""));
+		state = ViewStateEnum.valueOf(preferences.getString("state"+index, ViewStateEnum.books.name()));
+	}
+	
 }

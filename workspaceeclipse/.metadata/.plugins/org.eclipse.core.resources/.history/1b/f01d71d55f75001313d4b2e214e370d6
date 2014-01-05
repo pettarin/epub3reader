@@ -1,0 +1,437 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2013, V. Giacometti, M. Giuriato, B. Petrantuono
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+ */
+
+package it.angrydroids.epub3reader;
+
+import java.io.IOException;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.util.Log;
+
+public class EpubNavigator {
+
+	// Fields
+	private int nBooks;
+	private EpubManipulator[] books;
+	private SplitPanel[] views;
+	private boolean synchronizedReadingActive;
+	private boolean parallelText = false;
+	private MainActivity activity;
+	private static Context context;
+	
+	public EpubNavigator(int numberOfBooks, MainActivity a) {
+		nBooks = numberOfBooks;
+		books = new EpubManipulator[nBooks];
+		views = new SplitPanel[nBooks];
+		activity = a;
+		context = a.getBaseContext();
+	}
+	
+	public boolean openBook(String path, int index)
+	{
+		try {
+			if(books[index] != null)
+				books[index].destroy();
+
+			books[index] = new EpubManipulator(path, index+"", context);			
+			changePanel(new BookView(), index);
+			setView(books[index].getSpineElementPath(0),index);
+			
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public void setView(String page, int index) {
+
+		if(books[index] != null)
+			books[index].goToPage(page);
+		
+		loadPageIntoView(page, index);
+	}
+
+	public void setNote(String page, int index)
+	{
+		loadPageIntoView(page, (index+1)%nBooks);
+	}
+	
+	public void loadPageIntoView(String pathOfPage, int index) {
+		ViewStateEnum state = ViewStateEnum.notes;
+		
+		if (books[index]!=null)
+			if((pathOfPage.equals(books[index].getCurrentPageURL())) || (books[index].getPageIndex(pathOfPage) >= 0))
+				state = ViewStateEnum.books;
+		
+		if(books[index] == null)
+			state = ViewStateEnum.notes;
+		
+		if(views[index]==null || !(views[index] instanceof BookView))
+			changePanel(new BookView(), index);
+		
+		((BookView) views[index]).state = state;
+		((BookView) views[index]).loadPage(pathOfPage);
+	}
+
+	// if synchronized reading is active, change chapter in each books
+	public void goToNextChapter(int book) throws Exception {
+		setView(books[book].goToNextChapter(),book);
+		
+		if (synchronizedReadingActive)
+			for(int i = 1; i < nBooks; i++)
+				if(books[(book+i)%nBooks]!= null)
+					setView(books[(book+i)%nBooks].goToNextChapter(),(book+i)%nBooks);
+	}
+
+	// if synchronized reading is active, change chapter in each books
+	public void goToPrevChapter(int book) throws Exception {
+		setView(books[book].goToPreviousChapter(),book);
+		
+		if (synchronizedReadingActive)
+			for(int i = 1; i < nBooks; i++)
+				if(books[(book+i)%nBooks]!= null)
+					setView(books[(book+i)%nBooks].goToPreviousChapter(),(book+i)%nBooks);
+	}
+	
+	public void closeView(int index)
+	{
+		if(books[index]!=null && (!(views[index] instanceof BookView) || (((BookView)views[index]).state != ViewStateEnum.books)))
+		{			
+			BookView v = new BookView();
+			changePanel(v, index);
+			v.loadPage(books[index].getCurrentPageURL());
+		}
+		else
+		{
+			if(books[index]!=null)
+				try {
+					books[index].destroy();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			while(index < nBooks-1) {
+				books[index] = books[index+1];
+				if(books[index] != null)
+					books[index].changeDirName(index+"");
+				if(views[index+1]!=null)
+					changePanel(views[index+1], index);
+				else
+					if(views[index]!=null)
+					{
+						activity.removePanel(views[index]);
+						views[index]=null;
+					}
+				index++;
+			}
+			books[nBooks-1]=null;
+			if(views[nBooks-1]!=null)
+			{
+				activity.removePanel(views[nBooks-1]);
+				views[nBooks-1]=null;
+			}
+		}
+	
+/*		
+		if(views[index] instanceof BookView)
+		{
+			BookView v = (BookView)views[index];
+			if(v.state == ViewStateEnum.notes)
+			{
+				v.state = ViewStateEnum.books;
+				if(books[index]!=null)
+					v.loadPage(books[index].getCurrentPageURL());
+				else
+				{
+					activity.removePanel(views[index]);
+					views[index] = null;
+					viewedPages[index] = null;
+				}					
+			}
+			else
+			{
+				activity.removePanel(views[index]);
+				if(books[index]!=null)
+				{
+					try {
+						books[index].destroy();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				books[index] = null;
+				views[index] = null;
+				viewedPages[index] = null;
+			}
+		}
+		else
+		{
+			BookView v = new BookView();
+			changePanel(v,index);
+			v.loadPage(viewedPages[index]);
+		}*/
+	}
+	
+	public String[] getLanguagesBook(int index)
+	{
+		return books[index].getLanguages();
+	}
+	
+	public boolean parallelText(int book, int firstLanguage, int secondLanguage) {
+		boolean ok = true;
+		
+		if(firstLanguage != -1) {
+			try {
+				if(secondLanguage != -1) {
+					openBook(books[book].getFileName(), (book+1)%2);
+					books[(book+1)%2].goToPage(books[book].getCurrentSpineElementIndex());
+					books[(book+1)%2].setLanguage(secondLanguage);
+					setView(books[(book+1)%2].getCurrentPageURL(),(book+1)%2);
+				}
+				books[book].setLanguage(firstLanguage);
+				setView(books[book].getCurrentPageURL(),book);
+			}
+			catch(Exception e)
+			{
+				ok = false;
+			}
+			
+			if (ok && firstLanguage != -1 && secondLanguage != -1)
+				setSynchronizedReadingActive(true);
+	
+			parallelText = true;
+		}
+		return ok;
+	}
+
+	public void setSynchronizedReadingActive(boolean value)
+	{
+		synchronizedReadingActive = value;
+	}
+	
+	public boolean flipSynchronizedReadingActive()
+	{
+		if (exactlyOneBookOpen())
+			return false;
+		synchronizedReadingActive = !synchronizedReadingActive;
+		return true;
+	}
+	
+	public boolean synchronizeView(int from, int to) throws Exception
+	{
+		if (!exactlyOneBookOpen()) {
+			setView(books[to].goToPage(books[from].getCurrentSpineElementIndex()), to);
+			return true;
+		} else
+			return false;
+	}
+	
+	// display book metadata
+	// returns true if metadata are available, false otherwise
+	public boolean displayMetadata(int book) {
+		boolean res = true;
+
+		if(books[book]!=null) {
+			DataView dv = new DataView();
+			dv.loadData(books[book].metadata());
+			changePanel(dv, book);
+		}
+		else
+			res = false;
+		
+		return res;
+	}
+
+	// return true if TOC is available, false otherwise
+	public boolean displayTOC(int book) {
+		boolean res = true;
+		
+		if(books[book]!= null)
+		{
+			((BookView) views[book]).loadPage(books[book].tableOfContents());
+			((BookView) views[book]).state=ViewStateEnum.notes;
+		}
+		else
+			res=false;
+		return res;
+	}
+	
+	public void changeCSS(int book, String[] settings) {
+		books[book].addCSS(settings);
+		loadPageIntoView(books[book].getCurrentPageURL(), book);
+	}
+
+	public void changeViewsSize(float weight)
+	{
+		if(views[0]!=null)
+			views[0].changeWeight(weight);
+	}
+	
+	public boolean isParallelTextOn() {
+		return parallelText;
+	}
+
+	public boolean isSynchronized() {
+		return synchronizedReadingActive;
+	}
+		
+	public boolean atLeastOneBookOpen()
+	{
+		if(books[0]!=null)
+			return true;
+		return false;
+	}
+	
+	public boolean exactlyOneBookOpen()
+	{
+		for(int i = 1; i < books.length;i++)
+			if(books[i]!=null)
+				return false;
+		if(books[0]!=null)
+			return true;
+		return false;
+	}
+	
+	public void changePanel(SplitPanel p, int index)
+	{		
+		if(views[index] != null) {
+			activity.removePanelWithoutClosing(views[index]);
+			p.changeWeight(views[index].getWeight());
+		}
+		
+		if(p.isAdded())
+			activity.removePanelWithoutClosing(p);
+		
+		views[index] = p;
+		activity.addPanel(p, index+"");
+		p.setKey(index);
+		
+		for(int i = index+1; i < views.length; i++)
+			if(views[i]!= null)
+			{
+				activity.removePanelWithoutClosing(views[i]);
+				activity.attachPanel(views[i]);
+			}
+	}
+	
+	private SplitPanel newPanelByClassName(String className)
+	{
+		if(className.equals(BookView.class.getName()))
+			return new BookView();
+		if(className.equals(DataView.class.getName()))
+			return new DataView();
+		return null;
+	}
+	
+	public void saveState(Editor editor) {
+
+		editor.putBoolean(getS(R.string.sync), synchronizedReadingActive);
+		editor.putBoolean(getS(R.string.parallelTextBool), parallelText);
+		
+		// Save Books
+		for(int i = 0; i < nBooks; i++)
+			if(books[i]!=null)
+			{
+				editor.putInt(getS(R.string.CurrentPageBook)+i,
+						books[i].getCurrentSpineElementIndex());
+				editor.putInt(getS(R.string.LanguageBook)+i,
+						books[i].getCurrentLanguage());
+				editor.putString(getS(R.string.nameEpub)+i,
+						books[i].getDecompressedFolder());
+				editor.putString(getS(R.string.pathBook)+i, books[i].getFileName());
+				try {
+					books[i].closeStream();
+				} catch (IOException e) {
+					Log.e(getS(R.string.error_CannotCloseStream),
+							getS(R.string.Book_Stream)+(i+1));
+					e.printStackTrace();
+				}
+			}
+		
+		// Save views
+		for(int i = 0; i < nBooks; i++)
+			if(views[i]!=null)// && views[i].isVisible())
+			{
+				editor.putString(getS(R.string.ViewType)+i, views[i].getClass().getName());
+				views[i].saveState(editor);
+				activity.removePanelWithoutClosing(views[i]);
+			}
+			else
+				editor.putString(getS(R.string.ViewType)+i, "");
+	}
+
+	public boolean loadState(SharedPreferences preferences) {
+		boolean ok = true;
+		synchronizedReadingActive = preferences.getBoolean(getS(R.string.sync), false);
+		parallelText = preferences.getBoolean(getS(R.string.parallelTextBool), false);
+		
+		int current,lang;
+		String name, path;
+		for(int i=0; i < nBooks; i++)
+		{			
+			current = preferences.getInt(getS(R.string.CurrentPageBook)+i, 0);
+			lang = preferences.getInt(getS(R.string.LanguageBook)+i, 0);
+			name = preferences.getString(getS(R.string.nameEpub)+i, null);
+			path = preferences.getString(getS(R.string.pathBook)+i, null);
+			// try loading a book already extracted
+			if(path != null) {
+				try {
+					books[i] = new EpubManipulator(path, name, current, lang, context);
+					books[i].goToPage(current);
+				} catch (Exception e1) {
+	
+					// error: retry this way
+					try {
+						books[i] = new EpubManipulator(path, i+"", context);
+						books[i].goToPage(current);
+					} catch (Exception e2) {
+						ok = false;
+					}	
+				}
+			}
+		}
+		
+		return ok;
+	}
+
+	public void loadViews(SharedPreferences preferences) {
+		for(int i = 0; i < nBooks; i++)
+		{
+			views[i] = newPanelByClassName(preferences.getString(getS(R.string.ViewType)+i, ""));
+			if(views[i]!=null)
+			{
+				activity.addPanel(views[i], i+"");
+				views[i].setKey(i);
+				views[i].loadState(preferences);
+			}
+		}
+	}
+	
+	public String getS(int id) {
+		return context.getResources().getString(id);
+	}
+
+}

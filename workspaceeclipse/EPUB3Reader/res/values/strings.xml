@@ -37,27 +37,17 @@
     <string name="tome">tome</string>
     <string name="lang">lang</string>
     <string name="error_noOtherLanguages">No other languages!</string>
-    <string name="firstState">FirstState</string>
-    <string name="secondState">SecondState</string>
-    <string name="firstViewSize">firstViewSize</string>
+    <string name="state">state</string>
     <string name="error_cannotLoadState">Cannot load the application/book state</string>
-    <string name="metadata">Metadata</string>
     <string name="textOrHTML">text/html</string>
-    <string name="onlyOne">onlyOne</string>
     <string name="sync">sync</string>
-    <string name="page1">page1</string>
-    <string name="CurrentPageBook1">CurrentPageBook1</string>
-    <string name="LanguageBook1">LanguageBook1</string>
-    <string name="pathBook1">pathBook1</string>
+    <string name="page">page</string>
+    <string name="CurrentPageBook">CurrentPageBook</string>
+    <string name="LanguageBook">LanguageBook</string>
+    <string name="pathBook">pathBook</string>
     <string name="error_CannotCloseStream">Cannot close stream!</string>
-    <string name="Book1_Stream">Book1 Stream</string>
-    <string name="nameEpub1">nameEpub1</string>
-    <string name="page2">page2</string>
-    <string name="CurrentPageBook2">CurrentPageBook2</string>
-    <string name="LanguageBook2">LanguageBook2</string>
-    <string name="pathBook2">pathBook2</string>
-    <string name="nameEpub2">nameEpub2</string>
-    <string name="Book2_Stream">Book2 Stream</string>
+    <string name="Book_Stream">Book Stream</string>
+    <string name="nameEpub">nameEpub</string>
     <string name="error_goToPage">goToPage error:</string>
     <string name="full_path">full-path</string>
     <string name="zip">.zip</string>
@@ -168,5 +158,9 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_book_view">BookView</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_tocview">TOCView</string>
+    <string name="title_activity_data_view">DataView</string>
+    <string name="ViewType">ViewType</string>
 
 </resources>

@@ -1,0 +1,23 @@
+package it.angrydroids.epub3reader;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebView;
+
+public class DataView extends SplitPanel {
+	protected boolean created;
+	protected WebView view;
+	protected String data;
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)	{
+		super.onCreateView(inflater, container, savedInstanceState);
+		created = false;
+		View v = inflater.inflate(R.layout.activity_data_view, container, false);
+		return v;
+	}
+}
