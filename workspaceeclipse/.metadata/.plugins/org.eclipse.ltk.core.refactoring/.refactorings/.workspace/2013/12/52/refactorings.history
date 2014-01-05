@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Delete resource &apos;EPUB3Reader&apos;" deleteContents="true" description="Delete resource &apos;EPUB3Reader&apos;" element1="/EPUB3Reader" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1387895435986"/>
-</session>
