@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="it.angrydroids.epub3reader"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-sdk
+        android:minSdkVersion="13"
+        android:targetSdkVersion="17" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="it.angrydroids.epub3reader.MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="it.angrydroids.epub3reader.FileChooser" >
+        </activity>
+        <activity
+            android:name="it.angrydroids.epub3reader.BookView"
+            android:label="@string/title_activity_book_view" >
+        </activity>
+        <activity
+            android:name="it.angrydroids.epub3reader.TOCView"
+            android:label="@string/title_activity_tocview" >
+        </activity>
+        <activity
+            android:name="it.angrydroids.epub3reader.DataView"
+            android:label="@string/title_activity_data_view" >
+        </activity>
+    </application>
+
+</manifest>

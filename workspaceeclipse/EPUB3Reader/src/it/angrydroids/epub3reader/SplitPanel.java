@@ -1,125 +1,121 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2013, V. Giacometti, M. Giuriato, B. Petrantuono
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 package it.angrydroids.epub3reader;
 
-import android.os.Bundle;
-import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
-import android.app.FragmentTransaction;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
-public class SplitPanel extends Activity {
+// Abstract fragment that represents a general panel containing only the closing button
+public abstract class SplitPanel extends Fragment {
 
-	public EpubNavigator navigator;
-	protected BookEnum bookSelector;
+	private RelativeLayout generalLayout;
+	protected int index;
+	protected RelativeLayout layout;
+	protected Button closeButton;
+	protected EpubNavigator navigator;
+	protected int screenWidth;
+	protected int screenHeight;
+	protected float weight;					// weight of the generalLayout
+	protected boolean created;				// tells whether the fragment has been created 
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_split_panel);
-		navigator = new EpubNavigator(2, this);
+	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)	{
+		navigator = ((MainActivity)getActivity()).navigator;
+		View v = inflater.inflate(R.layout.activity_split_panel, container, false);
+		weight = 0.5f;
+		created = false;
+		return v;
+	}
+	
+	@Override
+    public void onActivityCreated(Bundle saved) {
+		super.onActivityCreated(saved);
+		created = true;
+		generalLayout = (RelativeLayout) getView().findViewById(R.id.GeneralLayout);
+		layout = (RelativeLayout) getView().findViewById(R.id.Content);
+		closeButton = (Button) getView().findViewById(R.id.CloseButton);
 		
-		bookSelector = BookEnum.first;
-		Intent goToChooser = new Intent(this, FileChooser.class);
-		startActivityForResult(goToChooser, 0);
+		// ----- get activity screen size
+		DisplayMetrics metrics = this.getResources().getDisplayMetrics();
+		screenWidth = metrics.widthPixels;
+		screenHeight = metrics.heightPixels;
+		// -----
+
+		changeWeight(weight);
+		
+		// ----- VIEW CLOSING
+		closeButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				navigator.closeView(index);
+			}
+		});
+	}
+	
+	// change the weight of the general layout
+	public void changeWeight(float value)
+	{
+		if(created)
+		{
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, value);
+			generalLayout.setLayoutParams(params);
+		}
 	}
 
-	// load the selected book
-		@Override
-		public void onActivityResult(int requestCode, int resultCode, Intent data) {
-			
-			if (resultCode == Activity.RESULT_OK) {
-				String path = data.getStringExtra(getString(R.string.bpath));
-				
-				if (bookSelector == BookEnum.first)
-					navigator.openBook(path,0);
-				else
-					navigator.openBook(path,1);
-			}
-					/*if (navigator.openBook(path,0)) {
-						//navigator.setView("", 0);
-						//updateView1(ViewStateEnum.books);
-					} else {
-						//errorMessage(getString(R.string.error_LoadBook));
-					}
-				} else if (navigator.openBook(path,1)) {
-					//updateView2(ViewStateEnum.books);
-				} else {
-					//errorMessage(getString(R.string.error_LoadBook));
-				}
-			} /*else if (!navigator.atLeastOneBookOpen()) {
-				finish();
-			}*/
-		}
+	public float getWeight()
+	{
+		return weight;
+	}
 	
-		public Fragment addBookView(int index)
-		{
-			BookView bv = new BookView();
-			addFragment(bv, index);
-			return bv;
-		}
-		
-		public void addFragment(Fragment f, int index)
-		{
-			FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-			fragmentTransaction.add(R.id.MainLayout, f, index+"");
-			fragmentTransaction.commit();
-		}
-		
-		public void attachFragment(Fragment f)
-		{
-			FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-			fragmentTransaction.attach(f);
-			fragmentTransaction.commit();
-		}
-		
-		public void detachFragment(Fragment f)
-		{
-			FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-			fragmentTransaction.detach(f);
-			fragmentTransaction.commit();
-		}
-		
-		public void removeFragment (Fragment f)
-		{
-			FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-			fragmentTransaction.remove(f);
-			fragmentTransaction.commit();
-		}
-
-		
-		// Menu
-		@Override
-		public boolean onCreateOptionsMenu(Menu menu) {
-			getMenuInflater().inflate(R.menu.epub_reader_main, menu);
-			return true;
-		}
-		
-		@Override
-		public boolean onOptionsItemSelected(MenuItem item) {
-
-			switch (item.getItemId()) {
-			case R.id.FirstEPUB:
-				bookSelector = BookEnum.first;
-				Intent goToChooser1 = new Intent(this, FileChooser.class);
-				goToChooser1.putExtra(getString(R.string.second),
-						getString(R.string.time));
-				startActivityForResult(goToChooser1, 0);
-				return true;
-
-			case R.id.SecondEPUB:
-				bookSelector = BookEnum.second;
-				Intent goToChooser2 = new Intent(this, FileChooser.class);
-				goToChooser2.putExtra(getString(R.string.second),
-						getString(R.string.time));
-				startActivityForResult(goToChooser2, 0);
-				// invalidateOptionsMenu();
-				return true;
-
-			default:
-				return super.onOptionsItemSelected(item);
-			}
-		}
-
+	public void setKey(int value)
+	{
+		index = value;
+	}
+	
+	public void errorMessage(String message) {
+		((MainActivity)getActivity()).errorMessage(message);
+	}
+	
+	public void saveState(Editor editor)
+	{
+		editor.putFloat("weight"+index, weight);
+	}
+	
+	public void loadState(SharedPreferences preferences)
+	{
+		changeWeight(preferences.getFloat("weight"+index, 0.5f));
+	}
 }

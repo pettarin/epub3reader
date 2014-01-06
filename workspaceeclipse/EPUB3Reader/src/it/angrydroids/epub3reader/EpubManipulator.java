@@ -116,6 +116,7 @@ public class EpubManipulator {
 		if (spineElements.size() > 0) {
 			goToPage(0);
 		}
+		createTocFile();
 	}
 
 	// book from already decompressed folder
@@ -314,11 +315,12 @@ public class EpubManipulator {
 
 	public void closeStream() throws IOException {
 		fs.close();
+		book = null;
 	}
 
 	// close the stream and delete the extraction folder
 	public void destroy() throws IOException {
-		fs.close();
+		closeStream();
 		File c = new File(location + decompressedFolder);
 		deleteDir(c);
 	}
@@ -331,6 +333,26 @@ public class EpubManipulator {
 		f.delete();
 	}
 
+	// change the decompressedFolder name
+	public void changeDirName(String newName)
+	{
+		File dir = new File(location + decompressedFolder);
+		File newDir = new File(location + newName);
+		dir.renameTo(newDir);
+		
+		for (int i = 0; i < spineElementPaths.length; ++i)
+			// TODO: is there a robust path joiner in the java libs?
+			spineElementPaths[i] = spineElementPaths[i].replace("file://" + location + decompressedFolder,
+					"file://" + location + newName);
+		decompressedFolder = newName;
+		try {
+			goToPage(currentSpineElementIndex);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	// obtain a page in the current language
 	public String goToPage(int page) throws Exception {
 		return goToPage(page, this.currentLanguage);
@@ -686,8 +708,6 @@ public class EpubManipulator {
 	}
 
 	public static String getS(int id) {
-
 		return context.getResources().getString(id);
-
 	}
 }

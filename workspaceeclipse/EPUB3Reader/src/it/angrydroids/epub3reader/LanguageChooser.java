@@ -34,7 +34,7 @@ import android.os.Bundle;
 
 public class LanguageChooser extends DialogFragment {
 	String[] languages;
-	String book;
+	int book;
 	boolean[] selected;
 	int number_selected_elements;
 	ArrayList<Integer> mSelectedItems = new ArrayList<Integer>();
@@ -43,7 +43,7 @@ public class LanguageChooser extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		Bundle b = this.getArguments();
 		languages = b.getStringArray(getString(R.string.lang));
-		book = b.getString(getString(R.string.tome));
+		book = b.getInt(getString(R.string.tome));
 		selected = new boolean[languages.length];
 		number_selected_elements = 0;
 
@@ -88,13 +88,13 @@ public class LanguageChooser extends DialogFragment {
 						}
 
 						if (number_selected_elements >= 2)
-							((EpubReaderMain) getActivity()).refreshLanguages(
-									BookEnum.valueOf(book), first, second,
+							((MainActivity) getActivity()).refreshLanguages(
+									book, first, second,
 									number_selected_elements);
 
 						else if (number_selected_elements == 1)
-							((EpubReaderMain) getActivity()).refreshLanguages(
-									BookEnum.valueOf(book), first, -1,
+							((MainActivity) getActivity()).refreshLanguages(
+									book, first, -1,
 									number_selected_elements);
 
 					}

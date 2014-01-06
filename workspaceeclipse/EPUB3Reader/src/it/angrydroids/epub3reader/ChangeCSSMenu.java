@@ -30,6 +30,7 @@ public class ChangeCSSMenu extends DialogFragment {
 	protected Spinner spinRight;
 	protected int colInt, backInt, fontInt, alignInt, sizeInt, heightInt,
 			marginLInt, marginRInt;
+	protected MainActivity a;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -40,10 +41,10 @@ public class ChangeCSSMenu extends DialogFragment {
 		// Inflate and set the layout for the dialog
 		// Pass null as the parent view because its going in the dialog layout
 
+		a = (MainActivity)getActivity();
 		View view = inflater.inflate(R.layout.change_css, null);
 
-		final SharedPreferences preferences = ((EpubReaderMain) getActivity())
-				.getPreferences(Context.MODE_PRIVATE);
+		final SharedPreferences preferences = a.getPreferences(Context.MODE_PRIVATE);
 
 		spinColor = (Spinner) view.findViewById(R.id.spinnerColor);
 		colInt = preferences.getInt("spinColorValue", 0);
@@ -95,24 +96,19 @@ public class ChangeCSSMenu extends DialogFragment {
 						colInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							EpubReaderMain
-									.setColor(getString(R.string.black_rgb));
+							a.setColor(getString(R.string.black_rgb));
 							break;
 						case 1:
-							EpubReaderMain
-									.setColor(getString(R.string.red_rgb));
+							a.setColor(getString(R.string.red_rgb));
 							break;
 						case 2:
-							EpubReaderMain
-									.setColor(getString(R.string.green_rgb));
+							a.setColor(getString(R.string.green_rgb));
 							break;
 						case 3:
-							EpubReaderMain
-									.setColor(getString(R.string.blue_rgb));
+							a.setColor(getString(R.string.blue_rgb));
 							break;
 						case 4:
-							EpubReaderMain
-									.setColor(getString(R.string.white_rgb));
+							a.setColor(getString(R.string.white_rgb));
 							break;
 						default:
 							break;
@@ -133,19 +129,19 @@ public class ChangeCSSMenu extends DialogFragment {
 				backInt = (int) id;
 				switch ((int) id) {
 				case 0:
-					EpubReaderMain.setBackColor(getString(R.string.white_rgb));
+					a.setBackColor(getString(R.string.white_rgb));
 					break;
 				case 1:
-					EpubReaderMain.setBackColor(getString(R.string.red_rgb));
+					a.setBackColor(getString(R.string.red_rgb));
 					break;
 				case 2:
-					EpubReaderMain.setBackColor(getString(R.string.green_rgb));
+					a.setBackColor(getString(R.string.green_rgb));
 					break;
 				case 3:
-					EpubReaderMain.setBackColor(getString(R.string.blue_rgb));
+					a.setBackColor(getString(R.string.blue_rgb));
 					break;
 				case 4:
-					EpubReaderMain.setBackColor(getString(R.string.black_rgb));
+					a.setBackColor(getString(R.string.black_rgb));
 					break;
 				default:
 					break;
@@ -167,16 +163,13 @@ public class ChangeCSSMenu extends DialogFragment {
 						fontInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							EpubReaderMain
-									.setFontType(getString(R.string.Arial));
+							a.setFontType(getString(R.string.Arial));
 							break;
 						case 1:
-							EpubReaderMain
-									.setFontType(getString(R.string.Serif));
+							a.setFontType(getString(R.string.Serif));
 							break;
 						case 2:
-							EpubReaderMain
-									.setFontType(getString(R.string.Monospace));
+							a.setFontType(getString(R.string.Monospace));
 							break;
 						default:
 							break;
@@ -198,20 +191,16 @@ public class ChangeCSSMenu extends DialogFragment {
 						alignInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							EpubReaderMain
-									.setAlign(getString(R.string.Left_Align));
+							a.setAlign(getString(R.string.Left_Align));
 							break;
 						case 1:
-							EpubReaderMain
-									.setAlign(getString(R.string.Center_Align));
+							a.setAlign(getString(R.string.Center_Align));
 							break;
 						case 2:
-							EpubReaderMain
-									.setAlign(getString(R.string.Right_Align));
+							a.setAlign(getString(R.string.Right_Align));
 							break;
 						case 3:
-							EpubReaderMain
-									.setAlign(getString(R.string.Justify));
+							a.setAlign(getString(R.string.Justify));
 							break;
 						default:
 							break;
@@ -233,22 +222,22 @@ public class ChangeCSSMenu extends DialogFragment {
 						sizeInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							EpubReaderMain.setFontSize("100");
+							a.setFontSize("100");
 							break;
 						case 1:
-							EpubReaderMain.setFontSize("125");
+							a.setFontSize("125");
 							break;
 						case 2:
-							EpubReaderMain.setFontSize("150");
+							a.setFontSize("150");
 							break;
 						case 3:
-							EpubReaderMain.setFontSize("175");
+							a.setFontSize("175");
 							break;
 						case 4:
-							EpubReaderMain.setFontSize("200");
+							a.setFontSize("200");
 							break;
 						case 5:
-							EpubReaderMain.setFontSize("90");
+							a.setFontSize("90");
 							break;
 						default:
 							break;
@@ -270,22 +259,22 @@ public class ChangeCSSMenu extends DialogFragment {
 						heightInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							EpubReaderMain.setLineHeight("1");
+							a.setLineHeight("1");
 							break;
 						case 1:
-							EpubReaderMain.setLineHeight("1.25");
+							a.setLineHeight("1.25");
 							break;
 						case 2:
-							EpubReaderMain.setLineHeight("1.5");
+							a.setLineHeight("1.5");
 							break;
 						case 3:
-							EpubReaderMain.setLineHeight("1.75");
+							a.setLineHeight("1.75");
 							break;
 						case 4:
-							EpubReaderMain.setLineHeight("2");
+							a.setLineHeight("2");
 							break;
 						case 5:
-							EpubReaderMain.setLineHeight("0.9");
+							a.setLineHeight("0.9");
 							break;
 						default:
 							break;
@@ -306,22 +295,22 @@ public class ChangeCSSMenu extends DialogFragment {
 				marginLInt = (int) id;
 				switch ((int) id) {
 				case 0:
-					EpubReaderMain.setMarginLeft("0");
+					a.setMarginLeft("0");
 					break;
 				case 1:
-					EpubReaderMain.setMarginLeft("5");
+					a.setMarginLeft("5");
 					break;
 				case 2:
-					EpubReaderMain.setMarginLeft("10");
+					a.setMarginLeft("10");
 					break;
 				case 3:
-					EpubReaderMain.setMarginLeft("15");
+					a.setMarginLeft("15");
 					break;
 				case 4:
-					EpubReaderMain.setMarginLeft("20");
+					a.setMarginLeft("20");
 					break;
 				case 5:
-					EpubReaderMain.setMarginLeft("25");
+					a.setMarginLeft("25");
 					break;
 				default:
 					break;
@@ -343,22 +332,22 @@ public class ChangeCSSMenu extends DialogFragment {
 						marginRInt = (int) id;
 						switch ((int) id) {
 						case 0:
-							EpubReaderMain.setMarginRight("0");
+							a.setMarginRight("0");
 							break;
 						case 1:
-							EpubReaderMain.setMarginRight("5");
+							a.setMarginRight("5");
 							break;
 						case 2:
-							EpubReaderMain.setMarginRight("10");
+							a.setMarginRight("10");
 							break;
 						case 3:
-							EpubReaderMain.setMarginRight("15");
+							a.setMarginRight("15");
 							break;
 						case 4:
-							EpubReaderMain.setMarginRight("20");
+							a.setMarginRight("20");
 							break;
 						case 5:
-							EpubReaderMain.setMarginRight("25");
+							a.setMarginRight("25");
 							break;
 						default:
 							break;
@@ -376,15 +365,15 @@ public class ChangeCSSMenu extends DialogFragment {
 			@Override
 			public void onClick(View v) {
 
-				EpubReaderMain.setColor("");
-				EpubReaderMain.setBackColor("");
-				EpubReaderMain.setFontType("");
-				EpubReaderMain.setFontSize("");
-				EpubReaderMain.setLineHeight("");
-				EpubReaderMain.setAlign("");
-				EpubReaderMain.setMarginLeft("");
-				EpubReaderMain.setMarginRight("");
-				((EpubReaderMain) getActivity()).setCSS();
+				a.setColor("");
+				a.setBackColor("");
+				a.setFontType("");
+				a.setFontSize("");
+				a.setLineHeight("");
+				a.setAlign("");
+				a.setMarginLeft("");
+				a.setMarginRight("");
+				a.setCSS();
 				SharedPreferences.Editor editor = preferences.edit();
 				editor.putInt("spinColorValue", 0);
 				editor.putInt("spinBackValue", 0);
@@ -405,13 +394,13 @@ public class ChangeCSSMenu extends DialogFragment {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 
-						// EpubReaderMain.setLineHeight(editTextLineH.getText()
+						// a.setLineHeight(editTextLineH.getText()
 						// .toString());
-						// EpubReaderMain.setMargin(editTextTop.getText()
+						// a.setMargin(editTextTop.getText()
 						// .toString(), editTextBottom.getText()
 						// .toString(), editTextLeft.getText().toString(),
 						// editTextRight.getText().toString());
-						((EpubReaderMain) getActivity()).setCSS();
+						a.setCSS();
 
 						SharedPreferences.Editor editor = preferences.edit();
 						editor.putInt("spinColorValue", colInt);
