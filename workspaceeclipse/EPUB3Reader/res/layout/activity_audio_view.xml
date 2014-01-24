@@ -1,0 +1,90 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/GeneralLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="0.5"
+    android:padding="0dp"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".AudioView" >
+
+    <RelativeLayout
+        android:id="@+id/ViewportLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:padding="1dp" >
+
+        <RelativeLayout
+            android:id="@+id/Content"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="#FFFFFF"
+            android:padding="0dp" >
+
+            <RelativeLayout
+                android:id="@+id/PlayerLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:background="@color/dark_grey" >
+
+                <Button
+                    android:id="@+id/PauseButton"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:text="| |" />
+
+                <Button
+                    android:id="@+id/PlayButton"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/PauseButton"
+                    android:text=">" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/AudioListLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/PlayerLayout"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true" >
+
+                <ListView
+                    android:id="@+id/audioListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                </ListView>
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/CloseButton"
+            android:layout_width="@dimen/close_button_dimen"
+            android:layout_height="@dimen/close_button_dimen"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:padding="@dimen/all_margin"
+            android:textColorHint="@color/dark_grey"
+            android:textColorLink="@color/dark_grey" />
+    </RelativeLayout>
+
+</RelativeLayout>

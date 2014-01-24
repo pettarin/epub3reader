@@ -162,5 +162,7 @@
     <string name="title_activity_tocview">TOCView</string>
     <string name="title_activity_data_view">DataView</string>
     <string name="ViewType">ViewType</string>
+    <string name="title_activity_audio_view">AudioView</string>
+    <string name="audio">Extract Audio</string>
 
 </resources>

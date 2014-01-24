@@ -15,7 +15,7 @@
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/songName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -45,7 +45,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/spinnerColor"
-        android:layout_toRightOf="@+id/textView1"
+        android:layout_toRightOf="@+id/songName"
         android:entries="@array/ColorBack" />
 
     <TextView
@@ -72,7 +72,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/spinnerAlign"
         android:layout_alignParentLeft="true"
-        android:layout_alignRight="@+id/textView1"
+        android:layout_alignRight="@+id/songName"
         android:layout_alignTop="@+id/spinnerAlign"
         android:entries="@array/LineHeight" />
 

@@ -89,13 +89,11 @@ public class LanguageChooser extends DialogFragment {
 
 						if (number_selected_elements >= 2)
 							((MainActivity) getActivity()).refreshLanguages(
-									book, first, second,
-									number_selected_elements);
+									book, first, second);
 
 						else if (number_selected_elements == 1)
 							((MainActivity) getActivity()).refreshLanguages(
-									book, first, -1,
-									number_selected_elements);
+									book, first, -1);
 
 					}
 				});
