@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -72,6 +74,7 @@ public class EpubManipulator {
 	private String fileName;
 	FileInputStream fs;
 	private String actualCSS = "";
+	private String[][] audio;
 
 	// book from fileName
 	public EpubManipulator(String fileName, String destFolder,
@@ -334,16 +337,16 @@ public class EpubManipulator {
 	}
 
 	// change the decompressedFolder name
-	public void changeDirName(String newName)
-	{
+	public void changeDirName(String newName) {
 		File dir = new File(location + decompressedFolder);
 		File newDir = new File(location + newName);
 		dir.renameTo(newDir);
-		
+
 		for (int i = 0; i < spineElementPaths.length; ++i)
 			// TODO: is there a robust path joiner in the java libs?
-			spineElementPaths[i] = spineElementPaths[i].replace("file://" + location + decompressedFolder,
-					"file://" + location + newName);
+			spineElementPaths[i] = spineElementPaths[i].replace("file://"
+					+ location + decompressedFolder, "file://" + location
+					+ newName);
 		decompressedFolder = newName;
 		try {
 			goToPage(currentSpineElementIndex);
@@ -352,7 +355,7 @@ public class EpubManipulator {
 			e.printStackTrace();
 		}
 	}
-	
+
 	// obtain a page in the current language
 	public String goToPage(int page) throws Exception {
 		return goToPage(page, this.currentLanguage);
@@ -383,6 +386,8 @@ public class EpubManipulator {
 		}
 
 		this.currentPage = spineElement;
+
+		audioExtractor(currentPage);
 
 		return spineElement;
 	}
@@ -643,6 +648,67 @@ public class EpubManipulator {
 		}
 		actualCSS = css;
 
+	}
+
+	// change from relative path (that begin with ./ or ../) to absolute path
+	private void adjustAudioLinks() {
+		for (int i = 0; i < audio.length; i++)
+			for (int j = 0; j < audio[i].length; j++) {
+				if (audio[i][j].startsWith("./"))
+					audio[i][j] = currentPage.substring(0,
+							currentPage.lastIndexOf("/"))
+							+ audio[i][j].substring(1);
+
+				if (audio[i][j].startsWith("../")) {
+					String temp = currentPage.substring(0,
+							currentPage.lastIndexOf("/"));
+					audio[i][j] = temp.substring(0, temp.lastIndexOf("/"))
+							+ audio[i][j].substring(2);
+				}
+			}
+	}
+
+	// Extract all the src field of an audio tag
+	private ArrayList<String> getAudioSources(String audioTag) {
+		ArrayList<String> srcs = new ArrayList<String>();
+		Pattern p = Pattern.compile("src=\"[^\"]*\"");
+		Matcher m = p.matcher(audioTag);
+		while (m.find())
+			srcs.add(m.group().replace("src=\"", "").replace("\"", ""));
+
+		return srcs;
+	}
+
+	// Extract all audio tags from an xhtml page
+	private ArrayList<String> getAudioTags(String page) {
+		ArrayList<String> res = new ArrayList<String>();
+
+		String source = readPage(page);
+
+		Pattern p = Pattern.compile("<audio(?s).*?</audio>|<audio(?s).*?/>");
+		Matcher m = p.matcher(source);
+		while (m.find())
+			res.add(m.group(0));
+
+		return res;
+	}
+
+	private void audioExtractor(String page) {
+		ArrayList<String> tags = getAudioTags(page.replace("file:///", ""));
+		ArrayList<String> srcs;
+		audio = new String[tags.size()][];
+
+		for (int i = 0; i < tags.size(); i++) {
+			srcs = getAudioSources(tags.get(i));
+			audio[i] = new String[srcs.size()];
+			for (int j = 0; j < srcs.size(); j++)
+				audio[i][j] = srcs.get(j);
+		}
+		adjustAudioLinks();
+	}
+
+	public String[][] getAudio() {
+		return audio;
 	}
 
 	/*

@@ -1,6 +1,29 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2013, V. Giacometti, M. Giuriato, B. Petrantuono
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+ */
+
 package it.angrydroids.epub3reader;
 
-import android.os.Bundle;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
@@ -8,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -18,38 +42,36 @@ public class MainActivity extends Activity {
 	protected int bookSelector;
 	protected int panelCount;
 	protected String[] settings;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		navigator = new EpubNavigator(2, this);
-		
+
 		panelCount = 0;
 		settings = new String[8];
-		
+
 		// LOADSTATE
 		SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 		loadState(preferences);
 		navigator.loadViews(preferences);
-		if(panelCount == 0){
+		if (panelCount == 0) {
 			bookSelector = 0;
 			Intent goToChooser = new Intent(this, FileChooser.class);
 			startActivityForResult(goToChooser, 0);
 		}
 	}
-	
-	protected void onResume()
-	{
+
+	protected void onResume() {
 		super.onResume();
-		if(panelCount == 0)
-		{
+		if (panelCount == 0) {
 			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 			navigator.loadViews(preferences);
 		}
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -62,19 +84,18 @@ public class MainActivity extends Activity {
 	// load the selected book
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(panelCount == 0)
-		{
+		if (panelCount == 0) {
 			SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 			navigator.loadViews(preferences);
 		}
-		
+
 		if (resultCode == Activity.RESULT_OK) {
 			String path = data.getStringExtra(getString(R.string.bpath));
-			navigator.openBook(path,bookSelector);
+			navigator.openBook(path, bookSelector);
 		}
 	}
 
-	//---- Menu
+	// ---- Menu
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
@@ -100,6 +121,8 @@ public class MainActivity extends Activity {
 			// menu.findItem(R.id.SyncScroll).setVisible(true);
 			menu.findItem(R.id.StyleBook1).setVisible(true);
 			menu.findItem(R.id.StyleBook2).setVisible(true);
+			menu.findItem(R.id.firstAudio).setVisible(true);
+			menu.findItem(R.id.secondAudio).setVisible(true);
 		}
 
 		if (navigator.exactlyOneBookOpen() == true
@@ -111,13 +134,15 @@ public class MainActivity extends Activity {
 			menu.findItem(R.id.FirstFront).setVisible(false);
 			menu.findItem(R.id.SecondFront).setVisible(false);
 		}
-		
+
 		if (navigator.exactlyOneBookOpen() == true) {
 			menu.findItem(R.id.Synchronize).setVisible(false);
 			menu.findItem(R.id.Align).setVisible(false);
 			menu.findItem(R.id.SyncScroll).setVisible(false);
 			menu.findItem(R.id.StyleBook1).setVisible(false);
 			menu.findItem(R.id.StyleBook2).setVisible(false);
+			menu.findItem(R.id.firstAudio).setVisible(false);
+			menu.findItem(R.id.secondAudio).setVisible(false);
 		}
 
 		// if there is only one view, option "changeSizes" is not visualized
@@ -168,7 +193,7 @@ public class MainActivity extends Activity {
 
 		case R.id.PconS:
 			try {
-				boolean yes = navigator.synchronizeView(1,0);
+				boolean yes = navigator.synchronizeView(1, 0);
 				if (!yes) {
 					errorMessage(getString(R.string.error_onlyOneBookOpen));
 				}
@@ -272,70 +297,86 @@ public class MainActivity extends Activity {
 			}
 			return true;
 
-		/*case R.id.SyncScroll:
-			syncScrollActivated = !syncScrollActivated;
-			return true;*/
+			/*
+			 * case R.id.SyncScroll: syncScrollActivated = !syncScrollActivated;
+			 * return true;
+			 */
+
+		case R.id.audio:
+			if (navigator.exactlyOneBookOpen() == true)
+				navigator.extractAudio(0);
+			return true;
+		case R.id.firstAudio:
+			navigator.extractAudio(0);
+			return true;
+		case R.id.secondAudio:
+			navigator.extractAudio(1);
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	//----
-	
-	//---- Panels Manager
-	public void addPanel(SplitPanel p)
-	{
-		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+
+	// ----
+
+	// ---- Panels Manager
+	public void addPanel(SplitPanel p) {
+		FragmentTransaction fragmentTransaction = getFragmentManager()
+				.beginTransaction();
 		fragmentTransaction.add(R.id.MainLayout, p, p.getTag());
 		fragmentTransaction.commit();
-		
+
 		panelCount++;
 	}
-	
-	public void attachPanel(SplitPanel p)
-	{
-		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+
+	public void attachPanel(SplitPanel p) {
+		FragmentTransaction fragmentTransaction = getFragmentManager()
+				.beginTransaction();
 		fragmentTransaction.attach(p);
 		fragmentTransaction.commit();
-		
+
 		panelCount++;
 	}
-	
-	public void detachPanel(SplitPanel p)
-	{
-		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+
+	public void detachPanel(SplitPanel p) {
+		FragmentTransaction fragmentTransaction = getFragmentManager()
+				.beginTransaction();
 		fragmentTransaction.detach(p);
 		fragmentTransaction.commit();
-		
+
 		panelCount--;
 	}
-	
-	public void removePanelWithoutClosing(SplitPanel p)
-	{
-		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+
+	public void removePanelWithoutClosing(SplitPanel p) {
+		FragmentTransaction fragmentTransaction = getFragmentManager()
+				.beginTransaction();
 		fragmentTransaction.remove(p);
 		fragmentTransaction.commit();
-		
+
 		panelCount--;
 	}
-	
-	public void removePanel (SplitPanel p)
-	{
-		FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+
+	public void removePanel(SplitPanel p) {
+		FragmentTransaction fragmentTransaction = getFragmentManager()
+				.beginTransaction();
 		fragmentTransaction.remove(p);
 		fragmentTransaction.commit();
-		
+
 		panelCount--;
-		if(panelCount <= 0)
+		if (panelCount <= 0)
 			finish();
 	}
-	//----	
-		
-	//---- Language Selection
+
+	// ----
+
+	// ---- Language Selection
 	public void chooseLanguage(int book) {
 
 		String[] languages;
 		languages = navigator.getLanguagesBook(book);
-		if (languages.length > 0) {
+		if (languages.length == 2)
+			refreshLanguages(book, 0, 1);
+		else if (languages.length > 0) {
 			Bundle bundle = new Bundle();
 			bundle.putInt(getString(R.string.tome), book);
 			bundle.putStringArray(getString(R.string.lang), languages);
@@ -348,13 +389,13 @@ public class MainActivity extends Activity {
 		}
 	}
 
-	public void refreshLanguages(int book, int first, int second,
-			int numberOfLanguages) {
+	public void refreshLanguages(int book, int first, int second) {
 		navigator.parallelText(book, first, second);
 	}
-	//----
-	
-	//---- Change Style
+
+	// ----
+
+	// ---- Change Style
 	public void setCSS() {
 		navigator.changeCSS(bookSelector, settings);
 	}
@@ -391,23 +432,24 @@ public class MainActivity extends Activity {
 	public void setMarginRight(String mRight) {
 		settings[7] = mRight;
 	}
-	//----
-	
+
+	// ----
+
 	// change the views size, changing the weight
 	protected void changeViewsSize(float weight) {
 		navigator.changeViewsSize(weight);
 	}
-	
+
 	// Save/Load State
 	protected void saveState(Editor editor) {
 		navigator.saveState(editor);
 	}
-	
+
 	protected void loadState(SharedPreferences preferences) {
 		if (!navigator.loadState(preferences))
 			errorMessage(getString(R.string.error_cannotLoadState));
 	}
-		
+
 	public void errorMessage(String message) {
 		Context context = getApplicationContext();
 		Toast toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);

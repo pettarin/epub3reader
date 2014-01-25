@@ -42,6 +42,12 @@
         </menu>
     </item>
     <item android:id="@+id/SyncScroll" android:title="@string/syncScroll" android:visible="false"></item>
+    <item android:id="@+id/audio" android:title="@string/audio">
+        <menu>
+            <item android:id="@+id/firstAudio" android:title="@string/Book_1"/>
+            <item android:id="@+id/secondAudio" android:title="@string/Book_2"/>
+        </menu>
+    </item>
 
 
 </menu>

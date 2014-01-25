@@ -32,12 +32,12 @@
             android:label="@string/title_activity_book_view" >
         </activity>
         <activity
-            android:name="it.angrydroids.epub3reader.TOCView"
-            android:label="@string/title_activity_tocview" >
-        </activity>
-        <activity
             android:name="it.angrydroids.epub3reader.DataView"
             android:label="@string/title_activity_data_view" >
+        </activity>
+        <activity
+            android:name="it.angrydroids.epub3reader.AudioView"
+            android:label="@string/title_activity_audio_view" >
         </activity>
     </application>
 

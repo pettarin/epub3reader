@@ -20,7 +20,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-*/
+ */
 
 package it.angrydroids.epub3reader;
 
@@ -47,26 +47,29 @@ public abstract class SplitPanel extends Fragment {
 	protected EpubNavigator navigator;
 	protected int screenWidth;
 	protected int screenHeight;
-	protected float weight;					// weight of the generalLayout
-	protected boolean created;				// tells whether the fragment has been created 
-	
+	protected float weight; // weight of the generalLayout
+	protected boolean created; // tells whether the fragment has been created
+
 	@Override
-	public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState)	{
-		navigator = ((MainActivity)getActivity()).navigator;
-		View v = inflater.inflate(R.layout.activity_split_panel, container, false);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		navigator = ((MainActivity) getActivity()).navigator;
+		View v = inflater.inflate(R.layout.activity_split_panel, container,
+				false);
 		weight = 0.5f;
 		created = false;
 		return v;
 	}
-	
+
 	@Override
-    public void onActivityCreated(Bundle saved) {
+	public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
 		created = true;
-		generalLayout = (RelativeLayout) getView().findViewById(R.id.GeneralLayout);
+		generalLayout = (RelativeLayout) getView().findViewById(
+				R.id.GeneralLayout);
 		layout = (RelativeLayout) getView().findViewById(R.id.Content);
 		closeButton = (Button) getView().findViewById(R.id.CloseButton);
-		
+
 		// ----- get activity screen size
 		DisplayMetrics metrics = this.getResources().getDisplayMetrics();
 		screenWidth = metrics.widthPixels;
@@ -74,48 +77,46 @@ public abstract class SplitPanel extends Fragment {
 		// -----
 
 		changeWeight(weight);
-		
+
 		// ----- VIEW CLOSING
 		closeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				navigator.closeView(index);
+				closeView();
 			}
 		});
 	}
-	
+
+	protected void closeView() {
+		navigator.closeView(index);
+	}
+
 	// change the weight of the general layout
-	public void changeWeight(float value)
-	{
-		if(created)
-		{
+	public void changeWeight(float value) {
+		if (created) {
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, value);
 			generalLayout.setLayoutParams(params);
 		}
 	}
 
-	public float getWeight()
-	{
+	public float getWeight() {
 		return weight;
 	}
-	
-	public void setKey(int value)
-	{
+
+	public void setKey(int value) {
 		index = value;
 	}
-	
+
 	public void errorMessage(String message) {
-		((MainActivity)getActivity()).errorMessage(message);
+		((MainActivity) getActivity()).errorMessage(message);
 	}
-	
-	public void saveState(Editor editor)
-	{
-		editor.putFloat("weight"+index, weight);
+
+	public void saveState(Editor editor) {
+		editor.putFloat("weight" + index, weight);
 	}
-	
-	public void loadState(SharedPreferences preferences)
-	{
-		changeWeight(preferences.getFloat("weight"+index, 0.5f));
+
+	public void loadState(SharedPreferences preferences) {
+		changeWeight(preferences.getFloat("weight" + index, 0.5f));
 	}
 }
