@@ -5,7 +5,7 @@
     android:orientation="vertical" >
 
     <SeekBar
-        android:id="@+id/seekBar1"
+        android:id="@+id/progressBar"
         android:layout_width="match_parent"
         android:max="100"
         android:layout_height="wrap_content" />

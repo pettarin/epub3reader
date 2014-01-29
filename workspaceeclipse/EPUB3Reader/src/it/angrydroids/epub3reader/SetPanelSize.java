@@ -33,7 +33,7 @@ public class SetPanelSize extends DialogFragment {
 				.getPreferences(Context.MODE_PRIVATE);
 
 		sBv = preferences.getInt("seekBarValue", 50);
-		seekbar = (SeekBar) view.findViewById(R.id.seekBar1);
+		seekbar = (SeekBar) view.findViewById(R.id.progressBar);
 		seekbar.setProgress(sBv);
 
 		builder.setTitle(getString(R.string.SetSizeTitle));
