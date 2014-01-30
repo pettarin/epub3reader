@@ -4,8 +4,11 @@ import java.io.File;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,6 +18,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 // Panel specialized to show a list of audio files and play the desired one
 // The audio files are stored in an array of array.
@@ -24,9 +29,12 @@ public class AudioView extends SplitPanel {
 	String[][] audio;
 	ListView list;
 	private MediaPlayer player;
-	private Button play;
-	private Button pause;
+	private Button rew;
+	private Button playpause;
 	private String actuallyPlaying;
+	private SeekBar progressBar;
+	private Runnable update;
+	private Handler progressHandler;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,8 +51,14 @@ public class AudioView extends SplitPanel {
 		super.onActivityCreated(saved);
 
 		list = (ListView) getView().findViewById(R.id.audioListView);
-		play = (Button) getView().findViewById(R.id.PlayButton);
-		pause = (Button) getView().findViewById(R.id.PauseButton);
+		rew = (Button) getView().findViewById(R.id.RewindButton);
+		playpause = (Button) getView().findViewById(R.id.PlayPauseButton);
+		progressBar = (SeekBar) getView().findViewById(R.id.progressBar);
+		progressHandler = new Handler();
+
+		rew.setEnabled(false);
+		playpause.setEnabled(false);
+		playpause.setText(">");
 
 		list.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -63,32 +77,81 @@ public class AudioView extends SplitPanel {
 						player.setDataSource(audio[position][i]);
 						player.prepare();
 						player.start();
+						progressBar.setMax(player.getDuration());
+						rew.setEnabled(true);
+						playpause.setEnabled(true);
+						playpause.setText("| |");
 						actuallyPlaying = audio[position][i];
 						err = false;
 					} catch (Exception e) {
 						actuallyPlaying = null;
 					}
-				if (err)
+				if (err) {
+					playpause.setEnabled(false);
 					((MainActivity) getActivity())
-							.errorMessage("Impossibile aprire il file multimediale");
+							.errorMessage(getString(R.string.error_openaudiofile));
+				}
 			}
 		});
 
-		// Play Button
-		play.setOnClickListener(new OnClickListener() {
+		// Play or Pause Button
+		playpause.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				player.start();
+				if (player.isPlaying()) {
+					player.pause();
+					playpause.setText(">");
+				} else {
+					player.start();
+					playpause.setText("| |");
+					update.run();
+				}
 			}
 		});
 
-		// Pause Button
-		pause.setOnClickListener(new OnClickListener() {
+		// Rewind Button
+		rew.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				player.pause();
+				if (player != null) {
+					player.seekTo(0);
+					player.start();
+				}
 			}
 		});
+
+		progressBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				if (player != null)
+					player.seekTo(progress);
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		update = new Runnable() {
+
+			@Override
+			public void run() {
+				if (player != null)
+					progressBar.setProgress(player.getCurrentPosition());
+				progressHandler.postDelayed(this, 1000);
+			}
+		};
+		progressHandler.postDelayed(update, 1000);
 
 		setAudioList(audio);
 	}
@@ -98,8 +161,27 @@ public class AudioView extends SplitPanel {
 		this.audio = audio;
 		if (audio.length > 0 && created) {
 			String[] songs = new String[audio.length];
-			for (int i = 0; i < audio.length; i++)
-				songs[i] = (new File(audio[i][0])).getName();
+			MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+
+			for (int i = 0; i < audio.length; i++) {
+				// Get Title
+				retriever.setDataSource(audio[i][0].replace("file:///", ""));
+				String title = retriever
+						.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+				if (title == null)
+					title = (new File(audio[i][0])).getName();
+
+				// Get Duration
+				String duration = retriever
+						.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+				if (duration != null)
+					duration = (String) DateFormat.format("mm:ss",
+							Integer.parseInt(duration));
+				else
+					duration = "";
+
+				songs[i] = (i + 1) + "\t-\t" + title + "\t" + duration;
+			}
 
 			ArrayAdapter<String> songList = new ArrayAdapter<String>(
 					getActivity(), android.R.layout.simple_list_item_1, songs);
@@ -113,12 +195,15 @@ public class AudioView extends SplitPanel {
 			player.stop();
 			player.release();
 		}
+		progressHandler.removeCallbacks(update);
 		super.closeView();
 	}
 
 	@Override
 	public void saveState(Editor editor) {
+		progressHandler.removeCallbacks(update);
 		super.saveState(editor);
+
 		if (player != null) {
 			editor.putBoolean(index + "isPlaying", player.isPlaying());
 			editor.putInt(index + "current", player.getCurrentPosition());
@@ -136,11 +221,15 @@ public class AudioView extends SplitPanel {
 
 		if (actuallyPlaying != null) {
 			try {
+				playpause.setEnabled(true);
 				player.reset();
 				player.setDataSource(actuallyPlaying);
 				player.prepare();
-				if (preferences.getBoolean(index + "isPlaying", false))
+				if (preferences.getBoolean(index + "isPlaying", false)) {
 					player.start();
+					playpause.setText("| |");
+				} else
+					playpause.setText(">");
 				player.seekTo(preferences.getInt(index + "current", 0));
 			} catch (Exception e) {
 			}

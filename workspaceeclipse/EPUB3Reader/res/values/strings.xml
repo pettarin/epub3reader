@@ -164,5 +164,6 @@
     <string name="ViewType">ViewType</string>
     <string name="title_activity_audio_view">AudioView</string>
     <string name="audio">Extract Audio</string>
+    <string name="error_openaudiofile">Cannot open audio file</string>
 
 </resources>

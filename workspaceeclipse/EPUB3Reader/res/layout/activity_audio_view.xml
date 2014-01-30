@@ -38,22 +38,30 @@
                 android:background="@color/dark_grey" >
 
                 <Button
-                    android:id="@+id/PauseButton"
+                    android:id="@+id/PlayPauseButton"
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
-                    android:text="| |" />
+                    android:text=">" />
 
                 <Button
-                    android:id="@+id/PlayButton"
+                    android:id="@+id/RewindButton"
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
-                    android:layout_toLeftOf="@+id/PauseButton"
-                    android:text=">" />
+                    android:layout_toLeftOf="@+id/PlayPauseButton"
+                    android:text="&lt;&lt;" />
+
+                <SeekBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/RewindButton" />
 
             </RelativeLayout>
 

@@ -246,8 +246,10 @@ public class EpubNavigator {
 	}
 
 	public void changeViewsSize(float weight) {
-		if (views[0] != null)
-			views[0].changeWeight(weight);
+		if (views[0] != null && views[1] != null) {
+			views[0].changeWeight(1 - weight);
+			views[1].changeWeight(weight);
+		}
 	}
 
 	public boolean isParallelTextOn() {
