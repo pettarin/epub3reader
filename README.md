@@ -2,8 +2,8 @@
 
 ## Abstract 
 
-* Version: 1.1
-* Date: 2013-10-29
+* Version: 1.0.1
+* Date: 2014-01-30
 * Developers: V. Giacometti, M. Giuriato, B. Petrantuono
 * Mentors: C. Fantozzi, A. Pettarin
 * License: The MIT License (MIT), see the included `LICENSE.md` file

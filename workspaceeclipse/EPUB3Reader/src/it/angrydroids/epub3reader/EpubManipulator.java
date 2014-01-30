@@ -240,8 +240,9 @@ public class EpubManipulator {
 		br.close();
 
 		// in case the OPF file is in the root directory
+		if (!pathOPF.contains("/"))
+			pathOPF = "";
 
-		// pathOPF = "./" + pathOPF;
 		// remove the OPF file name and the preceding '/'
 		int last = pathOPF.lastIndexOf('/');
 		if (last > -1) {
