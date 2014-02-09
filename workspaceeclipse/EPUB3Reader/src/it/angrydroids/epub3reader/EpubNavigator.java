@@ -36,6 +36,7 @@ public class EpubNavigator {
 	private int nBooks;
 	private EpubManipulator[] books;
 	private SplitPanel[] views;
+	private boolean[] extractAudio;
 	private boolean synchronizedReadingActive;
 	private boolean parallelText = false;
 	private MainActivity activity;
@@ -45,6 +46,7 @@ public class EpubNavigator {
 		nBooks = numberOfBooks;
 		books = new EpubManipulator[nBooks];
 		views = new SplitPanel[nBooks];
+		extractAudio = new boolean[nBooks];
 		activity = a;
 		context = a.getBaseContext();
 	}
@@ -66,8 +68,16 @@ public class EpubNavigator {
 
 	public void setBookPage(String page, int index) {
 
-		if (books[index] != null)
+		if (books[index] != null) {
 			books[index].goToPage(page);
+			if (extractAudio[index]) {
+				if (views[(index + 1) % nBooks] instanceof AudioView)
+					((AudioView) views[(index + 1) % nBooks])
+							.setAudioList(books[index].getAudio());
+				else
+					extractAudio(index);
+			}
+		}
 
 		loadPageIntoView(page, index);
 	}
@@ -119,6 +129,16 @@ public class EpubNavigator {
 	}
 
 	public void closeView(int index) {
+		if (views[index] instanceof AudioView) {
+			((AudioView) views[index]).stop();
+			extractAudio[index > 0 ? index - 1 : nBooks - 1] = false;
+		}
+		if (extractAudio[index]
+				&& views[(index + 1) % nBooks] instanceof AudioView) {
+			closeView((index + 1) % nBooks);
+			extractAudio[index] = false;
+		}
+
 		// case: note or another panel over a book
 		if (books[index] != null
 				&& (!(views[index] instanceof BookView) || (((BookView) views[index]).state != ViewStateEnum.books))) {
@@ -240,6 +260,7 @@ public class EpubNavigator {
 	}
 
 	public void extractAudio(int book) {
+		extractAudio[book] = true;
 		AudioView a = new AudioView();
 		a.setAudioList(books[book].getAudio());
 		changePanel(a, (book + 1) % nBooks);
@@ -336,6 +357,7 @@ public class EpubNavigator {
 						books[i].getDecompressedFolder());
 				editor.putString(getS(R.string.pathBook) + i,
 						books[i].getFileName());
+				editor.putBoolean(getS(R.string.exAudio) + i, extractAudio[i]);
 				try {
 					books[i].closeStream();
 				} catch (IOException e) {
@@ -375,6 +397,8 @@ public class EpubNavigator {
 			lang = preferences.getInt(getS(R.string.LanguageBook) + i, 0);
 			name = preferences.getString(getS(R.string.nameEpub) + i, null);
 			path = preferences.getString(getS(R.string.pathBook) + i, null);
+			extractAudio[i] = preferences.getBoolean(
+					getS(R.string.exAudio) + i, false);
 			// try loading a book already extracted
 			if (path != null) {
 				try {
@@ -383,6 +407,14 @@ public class EpubNavigator {
 					books[i].goToPage(current);
 				} catch (Exception e1) {
 
+					// exception: retry this way
+					try {
+						books[i] = new EpubManipulator(path, i + "", context);
+						books[i].goToPage(current);
+					} catch (Exception e2) {
+						ok = false;
+					}
+				} catch (Error e) {
 					// error: retry this way
 					try {
 						books[i] = new EpubManipulator(path, i + "", context);
@@ -405,10 +437,10 @@ public class EpubNavigator {
 			if (views[i] != null) {
 				activity.addPanel(views[i]);
 				views[i].setKey(i);
-				views[i].loadState(preferences);
 				if (views[i] instanceof AudioView)
-					((AudioView) views[i]).setAudioList(books[(i > 0 ? i
-							: nBooks) - 1].getAudio());
+					((AudioView) views[i]).setAudioList(books[i > 0 ? i - 1
+							: nBooks - 1].getAudio());
+				views[i].loadState(preferences);
 			}
 		}
 	}

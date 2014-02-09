@@ -31,7 +31,7 @@
             <RelativeLayout
                 android:id="@+id/PlayerLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentRight="true"
@@ -42,18 +42,20 @@
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    android:text=">" />
+                    android:enabled="false"
+                    android:text="@string/play" />
 
                 <Button
                     android:id="@+id/RewindButton"
                     style="?android:attr/buttonStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
+                    android:layout_alignParentBottom="true"
                     android:layout_toLeftOf="@+id/PlayPauseButton"
-                    android:text="&lt;&lt;" />
+                    android:enabled="false"
+                    android:text="@string/rew" />
 
                 <SeekBar
                     android:id="@+id/progressBar"
@@ -77,7 +79,9 @@
                 <ListView
                     android:id="@+id/audioListView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="wrap_content"
+                    tools:listitem="@android:layout/simple_list_item_1" >
+
                 </ListView>
 
             </RelativeLayout>

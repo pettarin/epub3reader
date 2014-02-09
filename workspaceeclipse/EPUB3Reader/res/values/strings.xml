@@ -73,7 +73,7 @@
     <string name="error_CannotChangeStyle">Cannot Change Style!</string>
     <string name="OK">OK</string>
     <string name="Cancel">Cancel</string>
-    <string name="SetSizeTitle">First Panel Size:</string>
+    <string name="SetSizeTitle">Upper Panel Size:</string>
     <string name="LanguageChooserTitle">Choose two languages:</string>
     <string name="parallelTextBool">parallelTextBool</string>
 
@@ -165,5 +165,9 @@
     <string name="title_activity_audio_view">AudioView</string>
     <string name="audio">Extract Audio</string>
     <string name="error_openaudiofile">Cannot open audio file</string>
+    <string name="play">&gt;</string>
+    <string name="pause">| |</string>
+    <string name="rew">&lt;&lt;</string>
+    <string name="exAudio">exAudio</string>
 
 </resources>

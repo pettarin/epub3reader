@@ -29,6 +29,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +48,7 @@ public abstract class SplitPanel extends Fragment {
 	protected EpubNavigator navigator;
 	protected int screenWidth;
 	protected int screenHeight;
-	protected float weight; // weight of the generalLayout
+	protected float weight = 0.5f; // weight of the generalLayout
 	protected boolean created; // tells whether the fragment has been created
 
 	@Override
@@ -56,15 +57,14 @@ public abstract class SplitPanel extends Fragment {
 		navigator = ((MainActivity) getActivity()).navigator;
 		View v = inflater.inflate(R.layout.activity_split_panel, container,
 				false);
-		weight = 0.5f;
 		created = false;
 		return v;
 	}
 
 	@Override
 	public void onActivityCreated(Bundle saved) {
-		super.onActivityCreated(saved);
 		created = true;
+		super.onActivityCreated(saved);
 		generalLayout = (RelativeLayout) getView().findViewById(
 				R.id.GeneralLayout);
 		layout = (RelativeLayout) getView().findViewById(R.id.Content);
@@ -93,10 +93,12 @@ public abstract class SplitPanel extends Fragment {
 
 	// change the weight of the general layout
 	public void changeWeight(float value) {
+		weight = value;
 		if (created) {
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, value);
 			generalLayout.setLayoutParams(params);
+			Log.i("changed", value + "");
 		}
 	}
 
@@ -113,10 +115,13 @@ public abstract class SplitPanel extends Fragment {
 	}
 
 	public void saveState(Editor editor) {
+		Log.i("saved:weight" + index, "" + weight);
 		editor.putFloat("weight" + index, weight);
 	}
 
 	public void loadState(SharedPreferences preferences) {
+		Log.i("loaded:weight" + index,
+				preferences.getFloat("weight" + index, 0.5f) + "");
 		changeWeight(preferences.getFloat("weight" + index, 0.5f));
 	}
 }
