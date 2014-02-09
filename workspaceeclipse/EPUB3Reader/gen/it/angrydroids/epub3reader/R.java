@@ -181,6 +181,7 @@ public final class R {
         public static final int error_onlyOneBookOpen=0x7f050013;
         public static final int error_openaudiofile=0x7f050063;
         public static final int error_tocNotFound=0x7f050016;
+        public static final int exAudio=0x7f050067;
         public static final int full_path=0x7f05002d;
         public static final int green_rgb=0x7f05003f;
         public static final int hello_world=0x7f05005b;
@@ -193,9 +194,12 @@ public final class R {
         public static final int page=0x7f050025;
         public static final int parallelTextBool=0x7f050047;
         public static final int pathBook=0x7f050028;
+        public static final int pause=0x7f050065;
+        public static final int play=0x7f050064;
         public static final int publishersMeta=0x7f050034;
         public static final int px=0x7f050055;
         public static final int red_rgb=0x7f05003e;
+        public static final int rew=0x7f050066;
         public static final int rightsMeta=0x7f050037;
         public static final int second=0x7f05001b;
         public static final int state=0x7f050021;

@@ -1,3 +1,27 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2013, V. Giacometti, M. Giuriato, B. Petrantuono
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+ */
+
 package it.angrydroids.epub3reader;
 
 import java.io.File;
@@ -49,16 +73,11 @@ public class AudioView extends SplitPanel {
 	@Override
 	public void onActivityCreated(Bundle saved) {
 		super.onActivityCreated(saved);
-
 		list = (ListView) getView().findViewById(R.id.audioListView);
 		rew = (Button) getView().findViewById(R.id.RewindButton);
 		playpause = (Button) getView().findViewById(R.id.PlayPauseButton);
 		progressBar = (SeekBar) getView().findViewById(R.id.progressBar);
 		progressHandler = new Handler();
-
-		rew.setEnabled(false);
-		playpause.setEnabled(false);
-		playpause.setText(">");
 
 		list.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -80,7 +99,7 @@ public class AudioView extends SplitPanel {
 						progressBar.setMax(player.getDuration());
 						rew.setEnabled(true);
 						playpause.setEnabled(true);
-						playpause.setText("| |");
+						playpause.setText(getString(R.string.pause));
 						actuallyPlaying = audio[position][i];
 						err = false;
 					} catch (Exception e) {
@@ -100,10 +119,10 @@ public class AudioView extends SplitPanel {
 			public void onClick(View v) {
 				if (player.isPlaying()) {
 					player.pause();
-					playpause.setText(">");
+					playpause.setText(getString(R.string.play));
 				} else {
 					player.start();
-					playpause.setText("| |");
+					playpause.setText(getString(R.string.pause));
 					update.run();
 				}
 			}
@@ -120,40 +139,52 @@ public class AudioView extends SplitPanel {
 			}
 		});
 
+		progressBar.setProgress(0);
 		progressBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
-				if (player != null)
+				if (fromUser && player != null)
 					player.seekTo(progress);
 			}
 
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-				// TODO Auto-generated method stub
 
 			}
 		});
 
+		// This runnable update the progressBar progression every 500
+		// milliseconds
 		update = new Runnable() {
-
 			@Override
 			public void run() {
-				if (player != null)
+				if (player != null) {
+					progressBar.setMax(player.getDuration());
 					progressBar.setProgress(player.getCurrentPosition());
-				progressHandler.postDelayed(this, 1000);
+				}
+				progressHandler.postDelayed(this, 500);
 			}
 		};
-		progressHandler.postDelayed(update, 1000);
+		progressHandler.postDelayed(update, 500);
 
 		setAudioList(audio);
+
+		if (player != null) {
+			playpause.setEnabled(true);
+			rew.setEnabled(true);
+
+			if (player.isPlaying())
+				playpause.setText(getString(R.string.pause));
+			else
+				playpause.setText(getString(R.string.play));
+		}
 	}
 
 	// Load the list of audio files
@@ -172,15 +203,15 @@ public class AudioView extends SplitPanel {
 					title = (new File(audio[i][0])).getName();
 
 				// Get Duration
-				String duration = retriever
+				String d = retriever
 						.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-				if (duration != null)
-					duration = (String) DateFormat.format("mm:ss",
-							Integer.parseInt(duration));
+				if (d != null)
+					d = (String) DateFormat
+							.format("mm:ss", Integer.parseInt(d));
 				else
-					duration = "";
+					d = "";
 
-				songs[i] = (i + 1) + "\t-\t" + title + "\t" + duration;
+				songs[i] = (i + 1) + "\t-\t" + title + "\t" + d;
 			}
 
 			ArrayAdapter<String> songList = new ArrayAdapter<String>(
@@ -189,13 +220,18 @@ public class AudioView extends SplitPanel {
 		}
 	}
 
-	@Override
-	protected void closeView() {
+	public void stop() {
 		if (player != null) {
 			player.stop();
 			player.release();
+			player = null;
 		}
 		progressHandler.removeCallbacks(update);
+	}
+
+	@Override
+	protected void closeView() {
+		stop();
 		super.closeView();
 	}
 
@@ -208,8 +244,7 @@ public class AudioView extends SplitPanel {
 			editor.putBoolean(index + "isPlaying", player.isPlaying());
 			editor.putInt(index + "current", player.getCurrentPosition());
 			editor.putString(index + "actualSong", actuallyPlaying);
-			player.stop();
-			player.release();
+			stop();
 		}
 	}
 
@@ -218,20 +253,18 @@ public class AudioView extends SplitPanel {
 		super.loadState(preferences);
 		actuallyPlaying = preferences.getString(index + "actualSong", null);
 		player = new MediaPlayer();
+		setAudioList(audio);
 
 		if (actuallyPlaying != null) {
 			try {
-				playpause.setEnabled(true);
 				player.reset();
 				player.setDataSource(actuallyPlaying);
 				player.prepare();
-				if (preferences.getBoolean(index + "isPlaying", false)) {
+				if (preferences.getBoolean(index + "isPlaying", false))
 					player.start();
-					playpause.setText("| |");
-				} else
-					playpause.setText(">");
 				player.seekTo(preferences.getInt(index + "current", 0));
 			} catch (Exception e) {
+				// TODO error message
 			}
 		}
 	}
