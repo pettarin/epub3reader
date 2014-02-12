@@ -34,6 +34,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -304,13 +305,16 @@ public class MainActivity extends Activity {
 
 		case R.id.audio:
 			if (navigator.exactlyOneBookOpen() == true)
-				navigator.extractAudio(0);
+				if (!navigator.extractAudio(0))
+					errorMessage(getString(R.string.no_audio));
 			return true;
 		case R.id.firstAudio:
-			navigator.extractAudio(0);
+			if (!navigator.extractAudio(0))
+				errorMessage(getString(R.string.no_audio));
 			return true;
 		case R.id.secondAudio:
-			navigator.extractAudio(1);
+			if (!navigator.extractAudio(1))
+				errorMessage(getString(R.string.no_audio));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -438,6 +442,16 @@ public class MainActivity extends Activity {
 	// change the views size, changing the weight
 	protected void changeViewsSize(float weight) {
 		navigator.changeViewsSize(weight);
+	}
+
+	public int getHeight() {
+		LinearLayout main = (LinearLayout) findViewById(R.id.MainLayout);
+		return main.getMeasuredHeight();
+	}
+
+	public int getWidth() {
+		LinearLayout main = (LinearLayout) findViewById(R.id.MainLayout);
+		return main.getWidth();
 	}
 
 	// Save/Load State

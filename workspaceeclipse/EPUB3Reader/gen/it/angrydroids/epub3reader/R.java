@@ -190,6 +190,7 @@ public final class R {
         public static final int lang=0x7f05001f;
         public static final int languageMeta=0x7f050033;
         public static final int nameEpub=0x7f05002b;
+        public static final int no_audio=0x7f050068;
         public static final int open=0x7f050056;
         public static final int page=0x7f050025;
         public static final int parallelTextBool=0x7f050047;
