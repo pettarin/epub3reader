@@ -29,7 +29,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +97,6 @@ public abstract class SplitPanel extends Fragment {
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, value);
 			generalLayout.setLayoutParams(params);
-			Log.i("changed", value + "");
 		}
 	}
 
@@ -115,13 +113,10 @@ public abstract class SplitPanel extends Fragment {
 	}
 
 	public void saveState(Editor editor) {
-		Log.i("saved:weight" + index, "" + weight);
 		editor.putFloat("weight" + index, weight);
 	}
 
 	public void loadState(SharedPreferences preferences) {
-		Log.i("loaded:weight" + index,
-				preferences.getFloat("weight" + index, 0.5f) + "");
 		changeWeight(preferences.getFloat("weight" + index, 0.5f));
 	}
 }

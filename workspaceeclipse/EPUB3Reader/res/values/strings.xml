@@ -169,5 +169,6 @@
     <string name="pause">| |</string>
     <string name="rew">&lt;&lt;</string>
     <string name="exAudio">exAudio</string>
+    <string name="no_audio">Can\'t find any audio file</string>
 
 </resources>

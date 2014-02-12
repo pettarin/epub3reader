@@ -28,6 +28,7 @@ import java.io.File;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ActivityInfo;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import android.os.Handler;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -190,7 +192,7 @@ public class AudioView extends SplitPanel {
 	// Load the list of audio files
 	public void setAudioList(String[][] audio) {
 		this.audio = audio;
-		if (audio.length > 0 && created) {
+		if (/* audio.length > 0 && */created) {
 			String[] songs = new String[audio.length];
 			MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
@@ -217,6 +219,34 @@ public class AudioView extends SplitPanel {
 			ArrayAdapter<String> songList = new ArrayAdapter<String>(
 					getActivity(), android.R.layout.simple_list_item_1, songs);
 			list.setAdapter(songList);
+
+			if (getActivity().getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+				// Portrait case: Adjust view's height depending on the number
+				// of files
+				int height = getView().findViewById(R.id.PlayerLayout)
+						.getHeight();
+				if (songs.length == 0)
+					height = 0;
+
+				View listItem;
+				for (int i = 0; i < songs.length; i++) {
+					listItem = songList.getView(i, null, list);
+					listItem.measure(MeasureSpec.makeMeasureSpec(0,
+							MeasureSpec.UNSPECIFIED), MeasureSpec
+							.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+					height += listItem.getMeasuredHeight();
+				}
+
+				float weight = (float) height
+						/ ((MainActivity) getActivity()).getHeight();
+				if (weight > 0.5f)
+					weight = 0.5f;
+				navigator.changeViewsSize(1 - weight);
+			} else {
+				// Landscape case: fifty-fifty
+				navigator.changeViewsSize(0.5f);
+			}
+
 		}
 	}
 

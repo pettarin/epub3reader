@@ -259,11 +259,15 @@ public class EpubNavigator {
 		loadPageIntoView(books[book].getCurrentPageURL(), book);
 	}
 
-	public void extractAudio(int book) {
-		extractAudio[book] = true;
-		AudioView a = new AudioView();
-		a.setAudioList(books[book].getAudio());
-		changePanel(a, (book + 1) % nBooks);
+	public boolean extractAudio(int book) {
+		if (books[book].getAudio().length > 0) {
+			extractAudio[book] = true;
+			AudioView a = new AudioView();
+			a.setAudioList(books[book].getAudio());
+			changePanel(a, (book + 1) % nBooks);
+			return true;
+		}
+		return false;
 	}
 
 	public void changeViewsSize(float weight) {
@@ -413,6 +417,8 @@ public class EpubNavigator {
 						books[i].goToPage(current);
 					} catch (Exception e2) {
 						ok = false;
+					} catch (Error e3) {
+						ok = false;
 					}
 				} catch (Error e) {
 					// error: retry this way
@@ -420,6 +426,8 @@ public class EpubNavigator {
 						books[i] = new EpubManipulator(path, i + "", context);
 						books[i].goToPage(current);
 					} catch (Exception e2) {
+						ok = false;
+					} catch (Error e3) {
 						ok = false;
 					}
 				}
