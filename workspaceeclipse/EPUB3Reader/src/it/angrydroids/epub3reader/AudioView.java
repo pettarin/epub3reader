@@ -57,7 +57,7 @@ public class AudioView extends SplitPanel {
 	private MediaPlayer player;
 	private Button rew;
 	private Button playpause;
-	private String actuallyPlaying;
+	private String actuallyPlaying = null;
 	private SeekBar progressBar;
 	private Runnable update;
 	private Handler progressHandler;
@@ -66,7 +66,6 @@ public class AudioView extends SplitPanel {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		actuallyPlaying = null;
 		View v = inflater.inflate(R.layout.activity_audio_view, container,
 				false);
 		return v;
@@ -282,12 +281,12 @@ public class AudioView extends SplitPanel {
 	public void loadState(SharedPreferences preferences) {
 		super.loadState(preferences);
 		actuallyPlaying = preferences.getString(index + "actualSong", null);
-		player = new MediaPlayer();
 		setAudioList(audio);
 
 		if (actuallyPlaying != null) {
+			player = new MediaPlayer();
+			player.reset();
 			try {
-				player.reset();
 				player.setDataSource(actuallyPlaying);
 				player.prepare();
 				if (preferences.getBoolean(index + "isPlaying", false))
