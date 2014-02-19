@@ -84,33 +84,7 @@ public class AudioView extends SplitPanel {
 			@Override
 			public void onItemClick(AdapterView<?> listView, View itemView,
 					int position, long itemId) {
-				int i = 0;
-				boolean err = true;
-
-				if (player == null)
-					player = new MediaPlayer();
-
-				// Try to play every format of the selected audio
-				while (i < audio[position].length && err)
-					try {
-						player.reset();
-						player.setDataSource(audio[position][i]);
-						player.prepare();
-						player.start();
-						progressBar.setMax(player.getDuration());
-						rew.setEnabled(true);
-						playpause.setEnabled(true);
-						playpause.setText(getString(R.string.pause));
-						actuallyPlaying = audio[position][i];
-						err = false;
-					} catch (Exception e) {
-						actuallyPlaying = null;
-					}
-				if (err) {
-					playpause.setEnabled(false);
-					((MainActivity) getActivity())
-							.errorMessage(getString(R.string.error_openaudiofile));
-				}
+				start(position);
 			}
 		});
 
@@ -177,6 +151,10 @@ public class AudioView extends SplitPanel {
 
 		setAudioList(audio);
 
+		updateButtons();
+	}
+
+	private void updateButtons() {
 		if (player != null) {
 			playpause.setEnabled(true);
 			rew.setEnabled(true);
@@ -185,13 +163,21 @@ public class AudioView extends SplitPanel {
 				playpause.setText(getString(R.string.pause));
 			else
 				playpause.setText(getString(R.string.play));
+		} else {
+			playpause.setEnabled(false);
+			rew.setEnabled(false);
 		}
 	}
 
 	// Load the list of audio files
 	public void setAudioList(String[][] audio) {
 		this.audio = audio;
-		if (/* audio.length > 0 && */created) {
+		if (created) {
+			if (player != null) {
+				player.stop();
+				player.release();
+				player = null;
+			}
 			String[] songs = new String[audio.length];
 			MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
@@ -223,7 +209,8 @@ public class AudioView extends SplitPanel {
 				// Portrait case: Adjust view's height depending on the number
 				// of files
 				int height = getView().findViewById(R.id.PlayerLayout)
-						.getHeight();
+						.getHeight() + 2;
+				// no files: hide the view
 				if (songs.length == 0)
 					height = 0;
 
@@ -241,9 +228,50 @@ public class AudioView extends SplitPanel {
 				if (weight > 0.5f)
 					weight = 0.5f;
 				navigator.changeViewsSize(1 - weight);
+
+				// 1 file: show the player only and able it
+				if (songs.length == 1) {
+					start(0);
+					player.pause();
+				}
 			} else {
 				// Landscape case: fifty-fifty
 				navigator.changeViewsSize(0.5f);
+			}
+
+			updateButtons();
+
+		}
+	}
+
+	public void start(int i) {
+		if (i >= 0 && i < audio.length) {
+			int j = 0;
+			boolean err = true;
+
+			if (player == null)
+				player = new MediaPlayer();
+
+			// Try to play every format of the selected audio
+			while (j < audio[i].length && err)
+				try {
+					player.reset();
+					player.setDataSource(audio[i][j]);
+					player.prepare();
+					player.start();
+					progressBar.setMax(player.getDuration());
+					rew.setEnabled(true);
+					playpause.setEnabled(true);
+					playpause.setText(getString(R.string.pause));
+					actuallyPlaying = audio[i][j];
+					err = false;
+				} catch (Exception e) {
+					actuallyPlaying = null;
+				}
+			if (err) {
+				playpause.setEnabled(false);
+				((MainActivity) getActivity())
+						.errorMessage(getString(R.string.error_openaudiofile));
 			}
 
 		}
