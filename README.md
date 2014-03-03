@@ -2,7 +2,7 @@
 
 ## Abstract 
 
-* Version: 1.1
+* Version: 1.1.1
 * Date: 2014-03-03
 * Developers: V. Giacometti, M. Giuriato, B. Petrantuono
 * Mentors: C. Fantozzi, A. Pettarin
