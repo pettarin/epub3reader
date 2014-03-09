@@ -3,7 +3,7 @@
 ## Abstract 
 
 * Version: 1.1.1
-* Date: 2014-03-03
+* Date: 2014-03-09
 * Developers: V. Giacometti, M. Giuriato, B. Petrantuono
 * Mentors: C. Fantozzi, A. Pettarin
 * License: The MIT License (MIT), see the included `LICENSE.md` file
@@ -36,7 +36,7 @@ Finally, the user can split the viewport for reading two completely unrelated eB
 
 From this repository, you can download:
 
-* a pre-compiled APK from the `bin/` directory
+* a pre-compiled APK from the `Releases` tab
 * the Eclipse project directory, ready to be imported in your Eclipse workspace, from the `workspaceeclipse/` directory
 * some sample EPUB 3 eBooks containing parallel texts, from the `ebooks/` directory
 * some screenshots, from the `screenshots/` directory
