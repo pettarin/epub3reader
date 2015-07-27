@@ -1,5 +1,11 @@
 # EPUB3Reader Android App
 
+## IMPORTANT NOTICE (2015-07-27)
+
+This project is in a standby state, as no student has worked on it now for a while.
+
+If you are interested in developing an EPUB (3) reading app with "power user" features, you might be interested in Minstrel: [Web page](http://www.readbeyond.it/minstrel/index.html) [Code](https://github.com/readbeyond/minstrel/)
+
 ## Abstract 
 
 * Version: 1.1.1
